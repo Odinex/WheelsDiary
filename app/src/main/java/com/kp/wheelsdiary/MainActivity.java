@@ -43,6 +43,12 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 //set content view AFTER ABOVE sequence (to avoid crash)
         this.setContentView(R.layout.activity_main);
+
+        setupNavigationView();
+        setupToolbar();
+        setupTablayout();
+        setupCollapsingToolbarLayout();
+        setupFab();
         Intent i = new Intent(this, LoginActivity.class);
         startActivityForResult(i, 123);
     }
