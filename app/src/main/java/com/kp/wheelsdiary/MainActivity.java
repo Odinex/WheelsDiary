@@ -30,6 +30,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     Toolbar toolbar;
     TabLayout tabLayout;
     FloatingActionButton fab;
+    FloatingActionButton fab1;
+    FloatingActionButton fab2;
+    FloatingActionButton fab3;
+    private boolean isFABOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,19 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         setupFab();
         Intent i = new Intent(this, LoginActivity.class);
         startActivityForResult(i, 123);
+        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
+        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        fab3 = (FloatingActionButton) findViewById(R.id.fab3);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!isFABOpen){
+                    showFABMenu();
+                }else{
+                    closeFABMenu();
+                }
+            }
+        });
     }
 
     @Override
@@ -111,10 +128,19 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             return;
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 1"));
+        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 1MODE_SCROLLABLE"));
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 2MODE_SCROLLABLE"));
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 4"));
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 1MODE_SCROLLABLE"));
         tabLayout.addTab(tabLayout.newTab().setText("Tab 2"));
         tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
         tabLayout.addTab(tabLayout.newTab().setText("Tab 4"));
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 1MODE_SCROLLABLE"));
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 2"));
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
+        tabLayout.addTab(tabLayout.newTab().setText("Tab 4MODE_SCROLLABLE"));
     }
 
     private void setupFab(){
@@ -138,10 +164,28 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
         if(view.getId() == R.id.fab){
 
-            Snackbar
-                    .make(findViewById(R.id.coordinatorLayout), "This is Snackbar", Snackbar.LENGTH_LONG)
-                    .setAction("Action", this)
-                    .show(); // Don’t forget to show!
+
+
+//            Snackbar
+//                    .make(findViewById(R.id.coordinatorLayout), "This is Snackbar", Snackbar.LENGTH_LONG)
+//                    .setAction("Action", this)
+//                    .show(); // Don’t forget to show!
         }
+    }
+
+    private void showFABMenu(){
+        isFABOpen=true;
+        fab1.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
+        fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
+        fab3.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
+        fab.animate().rotation(45);
+    }
+
+    private void closeFABMenu(){
+        isFABOpen=false;
+        fab1.animate().translationY(0);
+        fab2.animate().translationY(0);
+        fab3.animate().translationY(0);
+        fab.animate().rotation(0);
     }
 }

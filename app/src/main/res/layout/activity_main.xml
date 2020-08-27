@@ -51,16 +51,47 @@
         <!-- Your Scrollable View -->
         <include layout="@layout/cardviews"/>
 
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_plus"
+            android:layout_marginBottom="26dp"
+            android:layout_marginEnd="26dp"
+            android:layout_gravity="bottom|right"
+            app:fabSize="mini" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_plus"
+            android:layout_marginBottom="26dp"
+            android:layout_marginEnd="26dp"
+            android:layout_gravity="bottom|right"
+            app:fabSize="mini" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_plus"
+            android:layout_marginBottom="26dp"
+            android:layout_marginEnd="26dp"
+            android:layout_gravity="bottom|right"
+            app:fabSize="mini" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_location_found"
+            android:src="@drawable/ic_plus_circle"
             android:layout_marginBottom="20dp"
             android:layout_marginEnd="20dp"
             android:layout_gravity="bottom|right"
             app:fabSize="normal" />
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView
