@@ -164,7 +164,7 @@ public class AddWheelActivity extends AppCompatActivity {
                     tv.setTextColor(Color.GRAY);
                 }
                 else {
-                    tv.setTextColor(Color.BLACK);
+                    tv.setTextColor(Color.WHITE);
                 }
                 return view;
             }
