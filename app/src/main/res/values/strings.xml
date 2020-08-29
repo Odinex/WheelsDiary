@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WheelsDiary</string>
+    <string name="app_name">Wheels Diary</string>
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -20,4 +20,9 @@
 
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="brand">Brand</string>
+
+    <string name="title_activity_add_wheel">Add Wheel Activity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

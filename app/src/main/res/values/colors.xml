@@ -19,4 +19,6 @@
 
     <color name="my_icons_dark">#000000</color>
     <color name="my_divider">#B6B6B6</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -23,8 +22,10 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.kp.wheelsdiary.ui.login.LoginActivity;
 
-public class MainActivity extends AppCompatActivity  implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    public static final int LOGIN_RESULT = 123;
+    public static final int ADD_WHEEL_RESULT = 234;
     DrawerLayout drawerLayout;
     CollapsingToolbarLayout collapsingToolbarLayout;
     Toolbar toolbar;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     FloatingActionButton fab;
     FloatingActionButton fab1;
     FloatingActionButton fab2;
-    FloatingActionButton fab3;
+    FloatingActionButton addWheelFab;
     private boolean isFABOpen = false;
 
     @Override
@@ -53,19 +54,27 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         setupTablayout();
         setupCollapsingToolbarLayout();
         setupFab();
-        Intent i = new Intent(this, LoginActivity.class);
-        startActivityForResult(i, 123);
+        Intent loginIntent = new Intent(this, LoginActivity.class);
+        startActivityForResult(loginIntent, LOGIN_RESULT);
         fab1 = (FloatingActionButton) findViewById(R.id.fab1);
         fab2 = (FloatingActionButton) findViewById(R.id.fab2);
-        fab3 = (FloatingActionButton) findViewById(R.id.fab3);
+        addWheelFab = (FloatingActionButton) findViewById(R.id.addWheelFab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!isFABOpen){
+                if (!isFABOpen) {
                     showFABMenu();
-                }else{
+                } else {
                     closeFABMenu();
                 }
+            }
+        });
+
+        addWheelFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent addWheelIntent = new Intent(view.getContext(), AddWheelActivity.class);
+                startActivityForResult(addWheelIntent, ADD_WHEEL_RESULT);
             }
         });
     }
@@ -73,12 +82,32 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 123) {
+        if (requestCode == LOGIN_RESULT) {
             if (resultCode == Activity.RESULT_OK) {
                 String result = data.getStringExtra("result");
 //                View viewById = findViewById(R.id);
 //                TextView greeting = (TextView) viewById;
 //                greeting.setText(String.format("Hello %s", result));
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Not logged in
+            }
+        } else if (requestCode == ADD_WHEEL_RESULT) {
+            if (resultCode == Activity.RESULT_OK) {
+                String tabName = data.getStringExtra("name");
+                tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+                final TabLayout.Tab tab = tabLayout.newTab().setText(tabName);
+                tabLayout.addTab(tab);
+                Snackbar openNewTab = Snackbar
+                        .make(findViewById(R.id.coordinatorLayout), "Open the new tab '" + tabName + "'", Snackbar.LENGTH_LONG);
+
+                openNewTab.setAction("Open", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        tab.select();
+                        // TODO refresh data for the car
+                    }
+                } ).show(); // Don’t forget to show!
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 // Not logged in
@@ -98,33 +127,33 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if(drawerLayout != null)
+                if (drawerLayout != null)
                     drawerLayout.openDrawer(GravityCompat.START);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupNavigationView(){
+    private void setupNavigationView() {
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
     }
 
-    private void setupCollapsingToolbarLayout(){
+    private void setupCollapsingToolbarLayout() {
 
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        if(collapsingToolbarLayout != null){
+        if (collapsingToolbarLayout != null) {
             collapsingToolbarLayout.setTitle(toolbar.getTitle());
             //collapsingToolbarLayout.setCollapsedTitleTextColor(0xED1C24);
             //collapsingToolbarLayout.setExpandedTitleColor(0xED1C24);
         }
     }
 
-    private void setupTablayout(){
+    private void setupTablayout() {
 
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
 
-        if(tabLayout == null)
+        if (tabLayout == null)
             return;
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -143,14 +172,15 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         tabLayout.addTab(tabLayout.newTab().setText("Tab 4MODE_SCROLLABLE"));
     }
 
-    private void setupFab(){
+    private void setupFab() {
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        if(fab != null)
+        if (fab != null)
             fab.setOnClickListener(this);
     }
-    private void setupToolbar(){
+
+    private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if(toolbar != null)
+        if (toolbar != null)
             setSupportActionBar(toolbar);
 
         // Show menu icon
@@ -162,8 +192,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     @Override
     public void onClick(View view) {
 
-        if(view.getId() == R.id.fab){
-
+        if (view.getId() == R.id.fab) {
 
 
 //            Snackbar
@@ -173,19 +202,19 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         }
     }
 
-    private void showFABMenu(){
-        isFABOpen=true;
+    private void showFABMenu() {
+        isFABOpen = true;
         fab1.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
         fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
-        fab3.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
+        addWheelFab.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
         fab.animate().rotation(45);
     }
 
-    private void closeFABMenu(){
-        isFABOpen=false;
+    private void closeFABMenu() {
+        isFABOpen = false;
         fab1.animate().translationY(0);
         fab2.animate().translationY(0);
-        fab3.animate().translationY(0);
+        addWheelFab.animate().translationY(0);
         fab.animate().rotation(0);
     }
 }
