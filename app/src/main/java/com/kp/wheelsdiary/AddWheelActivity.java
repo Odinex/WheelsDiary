@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,9 +13,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.snackbar.Snackbar;
+import com.kp.wheelsdiary.dto.Wheel;
+import com.kp.wheelsdiary.service.WheelService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,23 +69,33 @@ public class AddWheelActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
+    private WheelService wheelService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        wheelService = new WheelService();
 
         setContentView(R.layout.activity_add_wheel);
         // Get reference of widgets from XML layout
 
         // Initializing a String Array
         String[] brands = new String[]{
-                "Select a brand...",
+                "Select a make...",
                 "AUDI",
                 "Nissan"
         };
 
         final Spinner brandSpinner = findViewById(R.id.brandSpinner);
         setSpinnerValues(brands, brandSpinner);
-
+        final Button button = findViewById(R.id.login);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onAddCarClick(view);
+            }
+        });
         final Spinner modelSpinner = findViewById(R.id.modelSpinner);
         brandSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -85,10 +103,10 @@ public class AddWheelActivity extends AppCompatActivity {
                 String brand = (String) parent.getItemAtPosition(position);
                 // If user change the default selection
                 // First item is disable and it is used for hint
-                if(position > 0){
+                if (position > 0) {
                     // Notify the selected item text
                     Toast.makeText
-                            (getApplicationContext(), "Selected brand: " + brand, Toast.LENGTH_SHORT)
+                            (getApplicationContext(), "Selected make: " + brand, Toast.LENGTH_SHORT)
                             .show();
                     try {
                         String[] models = getModelsForBrand(brand);
@@ -125,9 +143,9 @@ public class AddWheelActivity extends AppCompatActivity {
     private String[] getModelsForBrand(String brand) throws Exception {
         List<String> models = new ArrayList<>();
         models.add("Select a model...");
-        if(brand.equals("AUDI")) {
+        if (brand.equals("AUDI")) {
             models.addAll(Collections.singletonList("A4"));
-        } else if(brand.equals("Nissan")) {
+        } else if (brand.equals("Nissan")) {
             models.addAll(Collections.singletonList("Micra"));
         } else {
             throw new Exception("Invalid brand");
@@ -140,30 +158,27 @@ public class AddWheelActivity extends AppCompatActivity {
 
         // Initializing an ArrayAdapter
         final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-                this,R.layout.spinner_item,plantsList){
+                this, R.layout.spinner_item, plantsList) {
             @Override
-            public boolean isEnabled(int position){
-                if(position == 0)
-                {
+            public boolean isEnabled(int position) {
+                if (position == 0) {
                     // Disable the first item from Spinner
                     // First item will be use for hint
                     return false;
-                }
-                else
-                {
+                } else {
                     return true;
                 }
             }
+
             @Override
             public View getDropDownView(int position, View convertView,
                                         ViewGroup parent) {
                 View view = super.getDropDownView(position, convertView, parent);
                 TextView tv = (TextView) view;
-                if(position == 0){
+                if (position == 0) {
                     // Set the hint text color gray
                     tv.setTextColor(Color.GRAY);
-                }
-                else {
+                } else {
                     tv.setTextColor(Color.WHITE);
                 }
                 return view;
@@ -182,5 +197,35 @@ public class AddWheelActivity extends AppCompatActivity {
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
+    }
+
+    public void onAddCarClick(View view) {
+        final Spinner brandSpinner = findViewById(R.id.brandSpinner);
+
+        final Spinner modelSpinner = findViewById(R.id.modelSpinner);
+        final EditText nameEditText = findViewById(R.id.nameInput);
+        final EditText variantInput = findViewById(R.id.variantInput);
+        if (brandSpinner.getSelectedItemId() > 0 && modelSpinner.getSelectedItemId() > 0 && nameEditText.getText() != null
+                && !nameEditText.getText().toString().equals("")) {
+            // TODO intent
+            Intent returnIntent = new Intent();
+            Wheel wheel = new Wheel((String) brandSpinner.getSelectedItem(), (String) modelSpinner.getSelectedItem(),
+                    nameEditText.getText().toString(), variantInput.getText().toString());
+            wheelService.saveWheel(wheel);
+            returnIntent.putExtra("name", nameEditText.getText().toString());
+            setResult(Activity.RESULT_OK, returnIntent);
+            finish();
+
+        } else {
+            final Snackbar errorSnackBar = Snackbar
+                    .make(view, "Make, model or name is not filled. Please fill all of those", Snackbar.LENGTH_LONG);
+
+            errorSnackBar.setAction("Ok", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    errorSnackBar.dismiss();
+                }
+            }).show(); // Don’t forget to show!
+        }
     }
 }

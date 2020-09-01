@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:background="@color/black_overlay"
     android:orientation="vertical"
-    tools:context=".AddWheelActivity">
+    tools:context=".AddWheelActivity"
+    android:id="@+id/addWheelLayout">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
@@ -25,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/cardview_dark_background"
-                android:text="Add a car"
+                android:text="New car"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:textSize="36dp"
@@ -49,26 +50,28 @@
         android:layout_height="wrap_content"
         android:background="@android:drawable/btn_dropdown"
         android:spinnerMode="dropdown"
-        android:prompt="@string/brand"
         android:layout_margin="15dp" />
 
-    <Spinner
-        android:id="@+id/spinner3"
+    <EditText
+        android:id="@+id/variantInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:drawable/btn_dropdown"
-        android:spinnerMode="dropdown"
-        android:prompt="@string/brand"
-        android:layout_margin="15dp" />
-
-    <Spinner
-        android:id="@+id/spinner4"
+        android:layout_margin="15dp"
+        android:hint="Variant"
+        android:textColor="@color/my_divider"/>
+    <EditText
+        android:id="@+id/nameInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:drawable/btn_dropdown"
-        android:spinnerMode="dropdown"
-        android:prompt="@string/brand"
-        android:layout_margin="15dp" />
+        android:layout_margin="15dp"
+        android:hint="Short Name of the car"
+        android:textColor="@color/my_divider"/>
 
+    <Button
+        android:id="@+id/login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Add car" />
 
 </LinearLayout>
