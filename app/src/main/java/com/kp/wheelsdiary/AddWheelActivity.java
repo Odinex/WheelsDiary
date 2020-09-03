@@ -75,8 +75,6 @@ public class AddWheelActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        wheelService = new WheelService();
-
         setContentView(R.layout.activity_add_wheel);
         // Get reference of widgets from XML layout
 

@@ -2,21 +2,29 @@ package com.kp.wheelsdiary.service;
 
 import com.kp.wheelsdiary.dto.Wheel;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WheelService {
-    public List<Wheel> wheels;
+    private static Map<String,Wheel> wheels = new HashMap<>();
 
-    public WheelService() {
-        wheels = new ArrayList<>();
+
+    public static Collection<Wheel> getWheels() {
+        if(wheels.isEmpty()) {
+            for(int i = 0;i <4 ; i++) {
+                Wheel wheel = new Wheel("make" +i, "model" + i, "name" + i, "variant" + i);
+                saveWheel(wheel);
+            }
+        }
+        return wheels.values();
     }
 
-    public List<Wheel> getWheels() {
-        return wheels;
+    public static void saveWheel(Wheel wheel) {
+        wheels.put(wheel.getName(),wheel);
     }
 
-    public void saveWheel(Wheel wheel) {
-        wheels.add(wheel);
+    public static Wheel getWheelByName(String tabName) {
+        return wheels.get(tabName);
     }
 }

@@ -29,4 +29,5 @@ public class Wheel {
     public String getVariant() {
         return variant;
     }
+
 }

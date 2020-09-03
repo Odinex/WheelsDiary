@@ -20,12 +20,20 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.kp.wheelsdiary.dto.Task;
+import com.kp.wheelsdiary.dto.Wheel;
+import com.kp.wheelsdiary.service.TaskService;
+import com.kp.wheelsdiary.service.WheelService;
 import com.kp.wheelsdiary.ui.login.LoginActivity;
+
+import java.util.Collection;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final int LOGIN_RESULT = 123;
     public static final int ADD_WHEEL_RESULT = 234;
+    public static final String ALL = "All";
     DrawerLayout drawerLayout;
     CollapsingToolbarLayout collapsingToolbarLayout;
     Toolbar toolbar;
@@ -97,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String tabName = data.getStringExtra("name");
                 tabLayout = (TabLayout) findViewById(R.id.tabLayout);
                 final TabLayout.Tab tab = tabLayout.newTab().setText(tabName);
+
                 tabLayout.addTab(tab);
                 Snackbar openNewTab = Snackbar
                         .make(findViewById(R.id.coordinatorLayout), "Open the new tab '" + tabName + "'", Snackbar.LENGTH_LONG);
@@ -158,18 +167,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 1MODE_SCROLLABLE"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 2MODE_SCROLLABLE"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 4"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 1MODE_SCROLLABLE"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 2"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 4"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 1MODE_SCROLLABLE"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 2"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 4MODE_SCROLLABLE"));
+        TabLayout.Tab all = tabLayout.newTab().setText(ALL);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                String tabName = tab.getText().toString();
+                List<Task> tasks = getTasks(tabName);
+                for(Task task : tasks) {
+                    System.out.println(task);
+                }
+                String title = toolbar.getTitle().toString() + (" of " + tabName);
+                toolbar.setTitle(title);
+            }
+
+            private List<Task> getTasks(String tabName) {
+                List<Task> tasks;
+                if(tabName.equals(ALL)) {
+                    tasks = TaskService.getTasks();
+                } else {
+                    tasks = TaskService.getTasksForWheel(tabName);
+                }
+                return tasks;
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+
+
+        tabLayout.addTab(all);
+        all.select();
+
     }
 
     private void setupFab() {
