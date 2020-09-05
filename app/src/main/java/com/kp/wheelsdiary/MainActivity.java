@@ -27,7 +27,9 @@ import com.kp.wheelsdiary.service.WheelService;
 import com.kp.wheelsdiary.ui.login.LoginActivity;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(addWheelIntent, ADD_WHEEL_RESULT);
             }
         });
+        Objects.requireNonNull(tabLayout.getTabAt(0)).select();
     }
 
     @Override
@@ -167,18 +170,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        TabLayout.Tab all = tabLayout.newTab().setText(ALL);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
                 String tabName = tab.getText().toString();
+                System.out.println(tabName + "tabName");
                 List<Task> tasks = getTasks(tabName);
                 for(Task task : tasks) {
-                    System.out.println(task);
+                    System.out.println(new Date() + "is now. Task:  " + task);
+                    // TODO make cards with the tasks
                 }
-                String title = toolbar.getTitle().toString() + (" of " + tabName);
+                String title = ("Wheel Diary of " + tabName);
+                System.out.println("Title: " + title);
                 toolbar.setTitle(title);
+                setupCollapsingToolbarLayout();
             }
 
             private List<Task> getTasks(String tabName) {
@@ -202,11 +208,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-
-
+        TabLayout.Tab all = tabLayout.newTab().setText(ALL);
         tabLayout.addTab(all);
+        addTabs(tabLayout);
         all.select();
 
+
+
+    }
+
+    private void addTabs(TabLayout tabLayout) {
+        for(Wheel wheel : WheelService.getWheels()) {
+            TabLayout.Tab tab = tabLayout.newTab().setText(wheel.getName());
+            tabLayout.addTab(tab);
+        }
     }
 
     private void setupFab() {
