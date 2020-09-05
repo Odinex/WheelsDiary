@@ -3,18 +3,30 @@ package com.kp.wheelsdiary;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.content.res.Resources.Theme;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.LayoutDirection;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -22,9 +34,12 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.kp.wheelsdiary.dto.Task;
 import com.kp.wheelsdiary.dto.Wheel;
+import com.kp.wheelsdiary.enums.TaskTypeEnum;
 import com.kp.wheelsdiary.service.TaskService;
 import com.kp.wheelsdiary.service.WheelService;
 import com.kp.wheelsdiary.ui.login.LoginActivity;
+
+import org.xmlpull.v1.XmlPullParser;
 
 import java.util.Collection;
 import java.util.Date;
@@ -171,15 +186,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @SuppressLint("ResourceAsColor")
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
                 String tabName = tab.getText().toString();
                 System.out.println(tabName + "tabName");
+
+                LinearLayout cardLayout = findViewById(R.id.cardLinearLayout);
+                cardLayout.removeAllViews();
                 List<Task> tasks = getTasks(tabName);
+
                 for(Task task : tasks) {
                     System.out.println(new Date() + "is now. Task:  " + task);
                     // TODO make cards with the tasks
+                    CardView cardView = new CardView(cardLayout.getContext());
+                    CardView.LayoutParams cardViewParams = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    cardViewParams.setMargins(16,16,16,16);
+                    cardView.setLayoutParams(cardViewParams);
+                    LinearLayout linearLayout = new LinearLayout(cardView.getContext());
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    linearLayout.setOrientation(LinearLayout.VERTICAL);
+                    layoutParams.setMargins(16,16,16,16);
+                    linearLayout.setLayoutParams(layoutParams);
+
+                    Drawable drawable = ContextCompat.getDrawable(
+                            linearLayout.getContext(),R.drawable.cardview_border);
+                    linearLayout.setBackground(drawable);
+                    TextView titleTextView = new TextView(linearLayout.getContext());
+
+                    LinearLayout.LayoutParams layoutParamsText = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                    layoutParamsText.setMargins(16,16,16,16);
+                    titleTextView.setLayoutParams(layoutParamsText);
+                    if(task.getTaskType() != TaskTypeEnum.OTHER) {
+                        titleTextView.setText(task.getTaskType().name());
+                    }  else {
+                        titleTextView.setText(task.getOtherTaskType());
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        titleTextView.setTextAppearance(R.style.TextAppearance_AppCompat_Title);
+                    }
+                    titleTextView.setTextColor(R.color.my_primary);
+                    linearLayout.addView(titleTextView);
+                    TextView descriptionTextView = new TextView(linearLayout.getContext());
+                    descriptionTextView.setText(String.format("%s scheduled for %s", task.getDetails(), task.getDateScheduled()));
+                    descriptionTextView.setTextColor(R.color.my_icons_dark);
+                    descriptionTextView.setLayoutParams(layoutParamsText);
+                    linearLayout.addView(descriptionTextView);
+                    cardView.addView(linearLayout);
+                    cardLayout.addView(cardView);
+
+
                 }
                 String title = ("Wheel Diary of " + tabName);
                 System.out.println("Title: " + title);
