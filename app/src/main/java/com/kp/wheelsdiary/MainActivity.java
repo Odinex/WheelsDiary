@@ -95,6 +95,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent addTaskIntent = new Intent(view.getContext(),AddTaskActivity.class);
+                addTaskIntent.putExtra("TAB_NAME", tabLayout.getTabAt(tabLayout.getSelectedTabPosition())
+                        .getText().toString());
+                startActivity(addTaskIntent);
+            }
+        });
+
         addWheelFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
