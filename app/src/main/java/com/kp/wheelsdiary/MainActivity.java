@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final int LOGIN_RESULT = 123;
     public static final int ADD_WHEEL_RESULT = 234;
     public static final String ALL = "All";
+    private static final int ADD_TASK_RESULT = 345;
     DrawerLayout drawerLayout;
     CollapsingToolbarLayout collapsingToolbarLayout;
     Toolbar toolbar;
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent addTaskIntent = new Intent(view.getContext(),AddTaskActivity.class);
                 addTaskIntent.putExtra("TAB_NAME", tabLayout.getTabAt(tabLayout.getSelectedTabPosition())
                         .getText().toString());
-                startActivity(addTaskIntent);
+                startActivityForResult(addTaskIntent, ADD_TASK_RESULT);
             }
         });
 
@@ -150,6 +151,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (resultCode == Activity.RESULT_CANCELED) {
                 // Not logged in
             }
+        } else if(requestCode == ADD_TASK_RESULT) {
+            if(resultCode == Activity.RESULT_OK) {
+                String tabName = tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getText().toString();
+                reloadTasks(tabName);
+            }
         }
     }
 
@@ -170,6 +176,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        if (view.getId() == R.id.fab) {
+
+
+//            Snackbar
+//                    .make(findViewById(R.id.coordinatorLayout), "This is Snackbar", Snackbar.LENGTH_LONG)
+//                    .setAction("Action", this)
+//                    .show(); // Don’t forget to show!
+        }
     }
 
     private void setupNavigationView() {
@@ -204,69 +223,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String tabName = tab.getText().toString();
                 System.out.println(tabName + "tabName");
 
-                LinearLayout cardLayout = findViewById(R.id.cardLinearLayout);
-                cardLayout.removeAllViews();
-                List<Task> tasks = getTasks(tabName);
-
-                for(Task task : tasks) {
-                    System.out.println(new Date() + "is now. Task:  " + task);
-                    // TODO make cards with the tasks
-                    CardView cardView = new CardView(cardLayout.getContext());
-                    CardView.LayoutParams cardViewParams = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    cardViewParams.setMargins(16,16,16,16);
-                    cardView.setLayoutParams(cardViewParams);
-                    LinearLayout linearLayout = new LinearLayout(cardView.getContext());
-                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    linearLayout.setOrientation(LinearLayout.VERTICAL);
-                    layoutParams.setMargins(16,16,16,16);
-                    linearLayout.setLayoutParams(layoutParams);
-
-                    Drawable drawable = ContextCompat.getDrawable(
-                            linearLayout.getContext(),R.drawable.cardview_border);
-                    linearLayout.setBackground(drawable);
-                    TextView titleTextView = new TextView(linearLayout.getContext());
-
-                    LinearLayout.LayoutParams layoutParamsText = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-                    layoutParamsText.setMargins(16,16,16,16);
-                    titleTextView.setLayoutParams(layoutParamsText);
-                    if(task.getTaskType() != TaskTypeEnum.OTHER) {
-                        titleTextView.setText(task.getTaskType().name());
-                    }  else {
-                        titleTextView.setText(task.getOtherTaskType());
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        titleTextView.setTextAppearance(R.style.TextAppearance_AppCompat_Title);
-                    }
-                    titleTextView.setTextColor(Color.WHITE);
-                    linearLayout.addView(titleTextView);
-                    TextView descriptionTextView = new TextView(linearLayout.getContext());
-                    descriptionTextView.setText(String.format("%s scheduled for %s", task.getDetails(), task.getDateScheduled()));
-                    descriptionTextView.setTextColor(Color.WHITE);
-                    descriptionTextView.setLayoutParams(layoutParamsText);
-                    linearLayout.addView(descriptionTextView);
-                    cardView.addView(linearLayout);
-                    cardLayout.addView(cardView);
-
-
-                }
+                reloadTasks(tabName);
                 String title = ("Wheel Diary of " + tabName);
                 System.out.println("Title: " + title);
                 toolbar.setTitle(title);
                 setupCollapsingToolbarLayout();
             }
 
-            private List<Task> getTasks(String tabName) {
-                List<Task> tasks;
-                if(tabName.equals(ALL)) {
-                    tasks = TaskService.getTasks();
-                } else {
-                    tasks = TaskService.getTasksForWheel(tabName);
-                }
-                return tasks;
-            }
+
+
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
@@ -286,6 +251,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
+    }
+
+    private List<Task> getTasks(String tabName) {
+        List<Task> tasks;
+        if(tabName.equals(ALL)) {
+            tasks = TaskService.getTasks();
+        } else {
+            tasks = TaskService.getTasksForWheel(tabName);
+        }
+        return tasks;
     }
 
     private void addTabs(TabLayout tabLayout) {
@@ -312,18 +287,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ab.setDisplayHomeAsUpEnabled(true);
     }
 
-    @Override
-    public void onClick(View view) {
 
-        if (view.getId() == R.id.fab) {
-
-
-//            Snackbar
-//                    .make(findViewById(R.id.coordinatorLayout), "This is Snackbar", Snackbar.LENGTH_LONG)
-//                    .setAction("Action", this)
-//                    .show(); // Don’t forget to show!
-        }
-    }
 
     private void showFABMenu() {
         isFABOpen = true;
@@ -339,5 +303,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab2.animate().translationY(0);
         addWheelFab.animate().translationY(0);
         fab.animate().rotation(0);
+    }
+    private void reloadTasks(String tabName) {
+        LinearLayout cardLayout = findViewById(R.id.cardLinearLayout);
+        cardLayout.removeAllViews();
+        List<Task> tasks = getTasks(tabName);
+
+        for(Task task : tasks) {
+            System.out.println(new Date() + "is now. Task:  " + task);
+            // TODO make cards with the tasks
+            CardView cardView = new CardView(cardLayout.getContext());
+            CardView.LayoutParams cardViewParams = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            cardViewParams.setMargins(16,16,16,16);
+            cardView.setLayoutParams(cardViewParams);
+            LinearLayout linearLayout = new LinearLayout(cardView.getContext());
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
+            layoutParams.setMargins(16,16,16,16);
+            linearLayout.setLayoutParams(layoutParams);
+
+            Drawable drawable = ContextCompat.getDrawable(
+                    linearLayout.getContext(),R.drawable.cardview_border);
+            linearLayout.setBackground(drawable);
+            TextView titleTextView = new TextView(linearLayout.getContext());
+
+            LinearLayout.LayoutParams layoutParamsText = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            layoutParamsText.setMargins(16,16,16,16);
+            titleTextView.setLayoutParams(layoutParamsText);
+            if(task.getTaskType() != TaskTypeEnum.OTHER) {
+                titleTextView.setText(task.getTaskType().name());
+            }  else {
+                titleTextView.setText(task.getOtherTaskType());
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                titleTextView.setTextAppearance(R.style.TextAppearance_AppCompat_Title);
+            }
+            titleTextView.setTextColor(Color.WHITE);
+            linearLayout.addView(titleTextView);
+            TextView descriptionTextView = new TextView(linearLayout.getContext());
+            descriptionTextView.setText(String.format("%s scheduled for %s", task.getDetails(), task.getDateScheduled()));
+            descriptionTextView.setTextColor(Color.WHITE);
+            descriptionTextView.setLayoutParams(layoutParamsText);
+            linearLayout.addView(descriptionTextView);
+            cardView.addView(linearLayout);
+            cardLayout.addView(cardView);
+
+
+        }
     }
 }

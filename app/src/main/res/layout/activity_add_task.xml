@@ -70,7 +70,7 @@
         android:layout_margin="15dp"
         android:text="Pick Scheduled Date" />
     <EditText
-        android:id="@+id/dateInput"
+        android:id="@+id/dateScheduled"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
@@ -79,7 +79,7 @@
         android:enabled="false"/>
 
     <Button
-        android:id="@+id/login"
+        android:id="@+id/addTaskButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

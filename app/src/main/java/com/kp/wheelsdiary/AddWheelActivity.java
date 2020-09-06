@@ -69,7 +69,6 @@ public class AddWheelActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
-    private WheelService wheelService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +86,7 @@ public class AddWheelActivity extends AppCompatActivity {
 
         final Spinner brandSpinner = findViewById(R.id.brandSpinner);
         setSpinnerValues(brands, brandSpinner);
-        final Button button = findViewById(R.id.login);
+        final Button button = findViewById(R.id.addCarButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -204,11 +203,10 @@ public class AddWheelActivity extends AppCompatActivity {
         final EditText variantInput = findViewById(R.id.variantInput);
         if (brandSpinner.getSelectedItemId() > 0 && modelSpinner.getSelectedItemId() > 0 && nameEditText.getText() != null
                 && !nameEditText.getText().toString().equals("")) {
-            // TODO intent
             Intent returnIntent = new Intent();
             Wheel wheel = new Wheel((String) brandSpinner.getSelectedItem(), (String) modelSpinner.getSelectedItem(),
                     nameEditText.getText().toString(), variantInput.getText().toString());
-            wheelService.saveWheel(wheel);
+            WheelService.saveWheel(wheel);
             returnIntent.putExtra("name", nameEditText.getText().toString());
             setResult(Activity.RESULT_OK, returnIntent);
             finish();

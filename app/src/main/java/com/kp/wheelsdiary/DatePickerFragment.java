@@ -2,21 +2,16 @@ package com.kp.wheelsdiary;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.widget.DatePicker;
+import android.widget.EditText;
+
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-
-import android.text.format.DateFormat;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.TimePicker;
-
-import java.util.Calendar;
 
 
 /**
@@ -42,8 +37,12 @@ public class DatePickerFragment extends DialogFragment
 
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-        EditText editText = getActivity().findViewById(R.id.dateInput);
-        String date = day + "." + month + "." + year;
+        EditText editText = getActivity().findViewById(R.id.dateScheduled);
+        Calendar c = Calendar.getInstance();
+        c.set(year,month,day);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+
+        String date = dateFormat.format(c.getTime());
         System.out.println("Picked date: " + date);
         editText.setText(date);
 
