@@ -159,27 +159,27 @@
             android:layout_gravity="bottom|right"
             android:layout_marginEnd="26dp"
             android:layout_marginBottom="26dp"
-            android:src="@drawable/ic_plus"
+            android:src="@drawable/ic_plus_car"
             app:fabSize="mini" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab2"
+            android:id="@+id/addTaskFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
             android:layout_marginEnd="26dp"
             android:layout_marginBottom="26dp"
-            android:src="@drawable/ic_plus"
+            android:src="@drawable/ic_plus_task"
             app:fabSize="mini" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab1"
+            android:id="@+id/wheelsFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
             android:layout_marginEnd="26dp"
             android:layout_marginBottom="26dp"
-            android:src="@drawable/ic_plus"
+            android:src="@drawable/ic_cars"
             app:fabSize="mini" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -11,14 +11,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.content.res.Resources.Theme;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.LayoutDirection;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,9 +36,6 @@ import com.kp.wheelsdiary.service.TaskService;
 import com.kp.wheelsdiary.service.WheelService;
 import com.kp.wheelsdiary.ui.login.LoginActivity;
 
-import org.xmlpull.v1.XmlPullParser;
-
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -58,8 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Toolbar toolbar;
     TabLayout tabLayout;
     FloatingActionButton fab;
-    FloatingActionButton fab1;
-    FloatingActionButton fab2;
+    FloatingActionButton wheelsFab;
+    FloatingActionButton addTaskFab;
     FloatingActionButton addWheelFab;
     private boolean isFABOpen = false;
 
@@ -83,8 +76,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupFab();
         Intent loginIntent = new Intent(this, LoginActivity.class);
         startActivityForResult(loginIntent, LOGIN_RESULT);
-        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
-        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        wheelsFab = (FloatingActionButton) findViewById(R.id.wheelsFab);
+        addTaskFab = (FloatingActionButton) findViewById(R.id.addTaskFab);
         addWheelFab = (FloatingActionButton) findViewById(R.id.addWheelFab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        fab2.setOnClickListener(new View.OnClickListener() {
+        addTaskFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent addTaskIntent = new Intent(view.getContext(),AddTaskActivity.class);
@@ -291,16 +284,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void showFABMenu() {
         isFABOpen = true;
-        fab1.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
-        fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
+        wheelsFab.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
+        addTaskFab.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
         addWheelFab.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
         fab.animate().rotation(45);
     }
 
     private void closeFABMenu() {
         isFABOpen = false;
-        fab1.animate().translationY(0);
-        fab2.animate().translationY(0);
+        wheelsFab.animate().translationY(0);
+        addTaskFab.animate().translationY(0);
         addWheelFab.animate().translationY(0);
         fab.animate().rotation(0);
     }
