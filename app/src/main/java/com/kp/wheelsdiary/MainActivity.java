@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -239,11 +240,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         titleTextView.setTextAppearance(R.style.TextAppearance_AppCompat_Title);
                     }
-                    titleTextView.setTextColor(R.color.my_primary);
+                    titleTextView.setTextColor(Color.WHITE);
                     linearLayout.addView(titleTextView);
                     TextView descriptionTextView = new TextView(linearLayout.getContext());
                     descriptionTextView.setText(String.format("%s scheduled for %s", task.getDetails(), task.getDateScheduled()));
-                    descriptionTextView.setTextColor(R.color.my_icons_dark);
+                    descriptionTextView.setTextColor(Color.WHITE);
                     descriptionTextView.setLayoutParams(layoutParamsText);
                     linearLayout.addView(descriptionTextView);
                     cardView.addView(linearLayout);

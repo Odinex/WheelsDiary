@@ -185,7 +185,6 @@ public class AddWheelActivity extends AppCompatActivity {
         spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
         spinner.setAdapter(spinnerArrayAdapter);
 
-
     }
 
     @Override

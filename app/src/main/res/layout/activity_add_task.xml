@@ -61,7 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
-        android:hint="Short Name of the car"
+        android:hint="Details"
         android:textColor="@color/my_divider"/>
     <Button
         android:id="@+id/pickDateButton"
