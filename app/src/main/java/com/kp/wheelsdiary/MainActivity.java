@@ -15,6 +15,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,7 +25,10 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -48,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String ALL = "All";
     private static final int ADD_TASK_RESULT = 345;
     public static final int EDIT_TASK_INTENT = 456;
+    private static final int WHEELS_RESULT = 567;
     DrawerLayout drawerLayout;
     CollapsingToolbarLayout collapsingToolbarLayout;
     Toolbar toolbar;
@@ -110,6 +116,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(addWheelIntent, ADD_WHEEL_RESULT);
             }
         });
+
+        wheelsFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent wheelsIntent = new Intent(view.getContext(), WheelsActivity.class);
+                startActivityForResult(wheelsIntent, WHEELS_RESULT);
+            }
+        });
         Objects.requireNonNull(tabLayout.getTabAt(0)).select();
     }
 
@@ -142,15 +156,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         tab.select();
                         // TODO refresh data for the car
                     }
-                } ).show(); // Don’t forget to show!
+                }).show(); // Don’t forget to show!
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 // Not logged in
             }
-        } else if(requestCode == ADD_TASK_RESULT) {
-            if(resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == ADD_TASK_RESULT || requestCode == EDIT_TASK_INTENT) {
+            if (resultCode == Activity.RESULT_OK) {
                 String tabName = tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getText().toString();
                 reloadTasks(tabName);
+            }
+        } else if(requestCode == WHEELS_RESULT) {
+            if (resultCode == Activity.RESULT_OK) {
+                tabLayout.removeAllTabs();
+                addTabsAndSelectCombinedTab();
+                reloadTasks(ALL);
             }
         }
     }
@@ -227,8 +247,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
 
-
-
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
 
@@ -240,18 +258,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        TabLayout.Tab all = tabLayout.newTab().setText(ALL);
-        tabLayout.addTab(all);
-        addTabs(tabLayout);
-        all.select();
-
+        addTabsAndSelectCombinedTab();
 
 
     }
 
+    private void addTabsAndSelectCombinedTab() {
+        TabLayout.Tab all = tabLayout.newTab().setText(ALL);
+        tabLayout.addTab(all);
+        addTabs(tabLayout);
+        all.select();
+    }
+
     private List<Task> getTasks(String tabName) {
         List<Task> tasks;
-        if(tabName.equals(ALL)) {
+        if (tabName.equals(ALL)) {
             tasks = TaskService.getTasks();
         } else {
             tasks = TaskService.getTasksForWheel(tabName);
@@ -260,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void addTabs(TabLayout tabLayout) {
-        for(Wheel wheel : WheelService.getWheels()) {
+        for (Wheel wheel : WheelService.getWheels()) {
             TabLayout.Tab tab = tabLayout.newTab().setText(wheel.getName());
             tabLayout.addTab(tab);
         }
@@ -284,7 +305,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
     private void showFABMenu() {
         isFABOpen = true;
         wheelsFab.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
@@ -300,45 +320,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         addWheelFab.animate().translationY(0);
         fab.animate().rotation(0);
     }
+
     private void reloadTasks(String tabName) {
         LinearLayout cardLayout = findViewById(R.id.cardLinearLayout);
         cardLayout.removeAllViews();
         List<Task> tasks = getTasks(tabName);
 
-        for(final Task task : tasks) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenHeight = displayMetrics.heightPixels;
+        int screenWidth = displayMetrics.widthPixels;
+
+        for (final Task task : tasks) {
             System.out.println(new Date() + "is now. Task:  " + task);
             CardView cardView = new CardView(cardLayout.getContext());
             CardView.LayoutParams cardViewParams = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            cardViewParams.setMargins(16,16,16,16);
+            cardViewParams.setMargins(16, 16, 16, 16);
             cardView.setLayoutParams(cardViewParams);
 
             LinearLayout textAndButtonLayout = new LinearLayout(cardView.getContext());
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.setMargins(16,16,16,16);
+            layoutParams.setMargins(6, 6, 6, 6);
             textAndButtonLayout.setLayoutParams(layoutParams);
             textAndButtonLayout.setOrientation(LinearLayout.HORIZONTAL);
 
+            Drawable drawable = ContextCompat.getDrawable(
+                    textAndButtonLayout.getContext(), R.drawable.cardview_border);
+            textAndButtonLayout.setBackground(drawable);
+
+            ScrollView scrollView = new ScrollView(textAndButtonLayout.getContext());
+            scrollView.setLayoutParams(new ViewGroup.LayoutParams((int) (screenWidth * 0.8), (int) (screenHeight * 0.15)));
+
+
             LinearLayout textLayout = new LinearLayout(textAndButtonLayout.getContext());
             LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    (int) (screenWidth * 0.8), (int) (screenHeight * 0.15));
             textLayout.setOrientation(LinearLayout.VERTICAL);
-            layoutParams2.setMargins(16,16,16,16);
+            layoutParams2.setMargins(16, 16, 16, 16);
             textLayout.setLayoutParams(layoutParams2);
 
-            Drawable drawable = ContextCompat.getDrawable(
-                    textLayout.getContext(),R.drawable.cardview_border);
-            textLayout.setBackground(drawable);
+
+
+
             TextView titleTextView = new TextView(textLayout.getContext());
 
             LinearLayout.LayoutParams layoutParamsText = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-            layoutParamsText.setMargins(16,16,16,16);
+            layoutParamsText.setMargins(16, 16, 16, 16);
             titleTextView.setLayoutParams(layoutParamsText);
-            if(task.getTaskType() != TaskTypeEnum.OTHER) {
+            if (task.getTaskType() != TaskTypeEnum.OTHER) {
                 titleTextView.setText(task.getTaskType().name());
-            }  else {
+            } else {
                 titleTextView.setText(task.getOtherTaskType());
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -351,7 +385,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             descriptionTextView.setTextColor(Color.WHITE);
             descriptionTextView.setLayoutParams(layoutParamsText);
             textLayout.addView(descriptionTextView);
-            Button editButton = new Button(textAndButtonLayout.getContext());
+            ImageButton editButton = new ImageButton(textAndButtonLayout.getContext());
+            Drawable editIcon = ContextCompat.getDrawable(
+                    textLayout.getContext(), R.drawable.ic_editting_pen);
+            editButton.setImageDrawable(editIcon);
+            ViewGroup.LayoutParams editButtonParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            cardViewParams.setMargins(5,16,5,16);
+            editButton.setLayoutParams(editButtonParams);
+
             editButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -362,9 +404,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     startActivityForResult(editTaskIntent, EDIT_TASK_INTENT);
                 }
             });
-            textAndButtonLayout.addView(textLayout);
+            scrollView.addView(textLayout);
+            textAndButtonLayout.addView(scrollView);
 
-
+            textAndButtonLayout.addView(editButton);
             cardView.addView(textAndButtonLayout);
             cardLayout.addView(cardView);
 

@@ -9,10 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".WheelsActivity"></activity>
         <activity
             android:name=".TaskActivity"
             android:label="@string/title_activity_add_task"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".WheelActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

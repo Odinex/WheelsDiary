@@ -13,21 +13,31 @@ public class Task {
     private String wheelName;
     private long taskId;
 
-    public Task(Date dateCreated, Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, String wheelName) {
+    public Task(Date dateCreated, Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, String wheelName, long taskId) {
         this.dateCreated = dateCreated;
         this.dateScheduled = dateScheduled;
         this.taskType = taskType;
         this.otherTaskType = otherTaskType;
         this.details = details;
         this.wheelName = wheelName;
+        this.taskId = taskId;
     }
 
-    public Task(Date dateScheduled, TaskTypeEnum taskType, String details, String wheelName) {
-        this(dateScheduled,taskType,null,details,wheelName);
+    public Task(Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, String wheelName, long taskId) {
+        this.dateScheduled = dateScheduled;
+        this.taskType = taskType;
+        this.otherTaskType = otherTaskType;
+        this.details = details;
+        this.wheelName = wheelName;
+        this.taskId = taskId;
     }
 
-    public Task(Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, String wheelName) {
-        this(new Date(), dateScheduled,taskType,otherTaskType,details,wheelName);
+    public Task(Date dateScheduled, TaskTypeEnum taskType, String details, String wheelName, long taskId) {
+        this.dateScheduled = dateScheduled;
+        this.taskType = taskType;
+        this.details = details;
+        this.wheelName = wheelName;
+        this.taskId = taskId;
     }
 
     public Date getDateCreated() {
