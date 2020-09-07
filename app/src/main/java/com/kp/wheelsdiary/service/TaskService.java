@@ -56,4 +56,13 @@ public class TaskService {
         return filtered;
 
     }
+
+    public static Task getTaskById(Long taskId) throws Exception {
+        for(Task current : tasks) {
+            if(current.getTaskId() == taskId) {
+                return current;
+            }
+        }
+        throw new Exception("Task not found for id " + taskId);
+    }
 }

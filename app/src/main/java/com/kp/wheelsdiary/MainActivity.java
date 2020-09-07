@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final int ADD_WHEEL_RESULT = 234;
     public static final String ALL = "All";
     private static final int ADD_TASK_RESULT = 345;
+    public static final int EDIT_TASK_INTENT = 456;
     DrawerLayout drawerLayout;
     CollapsingToolbarLayout collapsingToolbarLayout;
     Toolbar toolbar;
@@ -93,9 +95,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         addTaskFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent addTaskIntent = new Intent(view.getContext(),AddTaskActivity.class);
+                Intent addTaskIntent = new Intent(view.getContext(), TaskActivity.class);
                 addTaskIntent.putExtra("TAB_NAME", tabLayout.getTabAt(tabLayout.getSelectedTabPosition())
                         .getText().toString());
+                addTaskIntent.putExtra("MODE", "ADD");
                 startActivityForResult(addTaskIntent, ADD_TASK_RESULT);
             }
         });
@@ -103,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         addWheelFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent addWheelIntent = new Intent(view.getContext(), AddWheelActivity.class);
+                Intent addWheelIntent = new Intent(view.getContext(), WheelActivity.class);
                 startActivityForResult(addWheelIntent, ADD_WHEEL_RESULT);
             }
         });
@@ -302,24 +305,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         cardLayout.removeAllViews();
         List<Task> tasks = getTasks(tabName);
 
-        for(Task task : tasks) {
+        for(final Task task : tasks) {
             System.out.println(new Date() + "is now. Task:  " + task);
-            // TODO make cards with the tasks
             CardView cardView = new CardView(cardLayout.getContext());
             CardView.LayoutParams cardViewParams = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             cardViewParams.setMargins(16,16,16,16);
             cardView.setLayoutParams(cardViewParams);
-            LinearLayout linearLayout = new LinearLayout(cardView.getContext());
+
+            LinearLayout textAndButtonLayout = new LinearLayout(cardView.getContext());
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            linearLayout.setOrientation(LinearLayout.VERTICAL);
             layoutParams.setMargins(16,16,16,16);
-            linearLayout.setLayoutParams(layoutParams);
+            textAndButtonLayout.setLayoutParams(layoutParams);
+            textAndButtonLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+            LinearLayout textLayout = new LinearLayout(textAndButtonLayout.getContext());
+            LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            textLayout.setOrientation(LinearLayout.VERTICAL);
+            layoutParams2.setMargins(16,16,16,16);
+            textLayout.setLayoutParams(layoutParams2);
 
             Drawable drawable = ContextCompat.getDrawable(
-                    linearLayout.getContext(),R.drawable.cardview_border);
-            linearLayout.setBackground(drawable);
-            TextView titleTextView = new TextView(linearLayout.getContext());
+                    textLayout.getContext(),R.drawable.cardview_border);
+            textLayout.setBackground(drawable);
+            TextView titleTextView = new TextView(textLayout.getContext());
 
             LinearLayout.LayoutParams layoutParamsText = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -335,13 +345,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 titleTextView.setTextAppearance(R.style.TextAppearance_AppCompat_Title);
             }
             titleTextView.setTextColor(Color.WHITE);
-            linearLayout.addView(titleTextView);
-            TextView descriptionTextView = new TextView(linearLayout.getContext());
+            textLayout.addView(titleTextView);
+            TextView descriptionTextView = new TextView(textLayout.getContext());
             descriptionTextView.setText(String.format("%s scheduled for %s", task.getDetails(), task.getDateScheduled()));
             descriptionTextView.setTextColor(Color.WHITE);
             descriptionTextView.setLayoutParams(layoutParamsText);
-            linearLayout.addView(descriptionTextView);
-            cardView.addView(linearLayout);
+            textLayout.addView(descriptionTextView);
+            Button editButton = new Button(textAndButtonLayout.getContext());
+            editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent editTaskIntent = new Intent(view.getContext(), TaskActivity.class);
+                    editTaskIntent.putExtra("TASK_ID", task.getTaskId());
+                    editTaskIntent.putExtra("MODE", "EDIT");
+
+                    startActivityForResult(editTaskIntent, EDIT_TASK_INTENT);
+                }
+            });
+            textAndButtonLayout.addView(textLayout);
+
+
+            cardView.addView(textAndButtonLayout);
             cardLayout.addView(cardView);
 
 

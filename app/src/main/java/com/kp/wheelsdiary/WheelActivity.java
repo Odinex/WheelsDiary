@@ -32,7 +32,7 @@ import java.util.List;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class AddWheelActivity extends AppCompatActivity {
+public class WheelActivity extends AppCompatActivity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -74,7 +74,7 @@ public class AddWheelActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_add_wheel);
+        setContentView(R.layout.activity_wheel);
         // Get reference of widgets from XML layout
 
         // Initializing a String Array

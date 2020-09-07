@@ -11,6 +11,7 @@ public class Task {
     private String otherTaskType;
     private String details;
     private String wheelName;
+    private long taskId;
 
     public Task(Date dateCreated, Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, String wheelName) {
         this.dateCreated = dateCreated;
@@ -87,5 +88,13 @@ public class Task {
                 ", details='" + details + '\'' +
                 ", wheelName='" + wheelName + '\'' +
                 '}';
+    }
+
+    public long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
     }
 }

@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.kp.wheelsdiary.dto.Task;
-import com.kp.wheelsdiary.dto.Wheel;
 import com.kp.wheelsdiary.enums.TaskTypeEnum;
 import com.kp.wheelsdiary.service.TaskService;
 import com.kp.wheelsdiary.service.WheelService;
@@ -24,34 +23,41 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.sql.Date;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
-public class AddTaskActivity extends AppCompatActivity {
+public class TaskActivity extends AppCompatActivity {
 
+    private Task currentTask = null;
     public static final int OTHER_TASK_TYPE_INDEX = TaskTypeEnum.OTHER.ordinal() + 1;
+    private SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_task);
+        setContentView(R.layout.activity_task);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        String tabName = getIntent().getStringExtra("TAB_NAME");
-        int wheelNameIndex = -1;
-        String[] wheelNameArray = WheelService.getWheelNameArray();
-        for (int i = 0, wheelNameArrayLength = wheelNameArray.length; i < wheelNameArrayLength; i++) {
-            String wheelName = wheelNameArray[i];
-            if (wheelName.equals(tabName)) {
-                wheelNameIndex = i;
-                break;
+        String tabName = null;
+        String mode = getIntent().getStringExtra("MODE");
+        if(Objects.equals(mode, "ADD")) {
+            tabName = getIntent().getStringExtra("TAB_NAME");
+        } else if(Objects.equals(mode, "EDIT")) {
+            Long taskId = getIntent().getLongExtra("TASK_ID", -1L);
+            try {
+                currentTask = TaskService.getTaskById(taskId);
+                tabName = currentTask.getWheelName();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
+
+        String[] wheelNameArray = WheelService.getWheelNameArray();
+        int wheelNameIndex = getWheelNameIndex(tabName, wheelNameArray);
 
         final Spinner wheelSpinner = findViewById(R.id.carSpinner);
         setSpinnerValues(wheelNameArray, wheelSpinner);
@@ -79,6 +85,7 @@ public class AddTaskActivity extends AppCompatActivity {
             }
         });
         setSpinnerValues(taskTypeArray, taskTypeSpinner);
+        setFieldValuesToCurrentTask(taskTypeSpinner);
         final Button button = findViewById(R.id.pickDateButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +105,7 @@ public class AddTaskActivity extends AppCompatActivity {
                 final EditText detailsInput = findViewById(R.id.detailsInput);
                 final EditText dateScheduled = findViewById(R.id.dateScheduled);
                 if (areFieldsValid(carSpinner, taskTypeSpinner, otherTypeEditText, detailsInput, dateScheduled)) {
-                    SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+
 
                     Intent returnIntent = new Intent();
                     Task task = null;
@@ -155,6 +162,35 @@ public class AddTaskActivity extends AppCompatActivity {
         });
     }
 
+    private void setFieldValuesToCurrentTask(Spinner taskTypeSpinner) {
+        if(currentTask != null) {
+            taskTypeSpinner.setSelection(currentTask.getTaskType().ordinal() + 1);
+            final EditText otherTypeEditText = findViewById(R.id.otherTypeEditText);
+            final EditText detailsInput = findViewById(R.id.detailsInput);
+            final EditText dateScheduled = findViewById(R.id.dateScheduled);
+            if(currentTask.getTaskType() == TaskTypeEnum.OTHER) {
+                otherTypeEditText.setText(currentTask.getOtherTaskType());
+            }
+            detailsInput.setText(currentTask.getDetails());
+            dateScheduled.setText(format.format(currentTask.getDateScheduled()));
+            TextView textView = findViewById(R.id.task_title);
+            String text = "Task " + currentTask.getTaskId();
+            textView.setText(text);
+        }
+    }
+
+    private int getWheelNameIndex(String tabName, String[] wheelNameArray) {
+        int wheelNameIndex = -1;
+        for (int i = 0, wheelNameArrayLength = wheelNameArray.length; i < wheelNameArrayLength; i++) {
+            String wheelName = wheelNameArray[i];
+            if (tabName != null && !tabName.isEmpty() && wheelName.equals(tabName)) {
+                wheelNameIndex = i;
+                break;
+            }
+        }
+        return wheelNameIndex;
+    }
+
     private void setSpinnerValues(String[] values, Spinner spinner) {
         final List<String> plantsList = new ArrayList<>(Arrays.asList(values));
 
@@ -190,5 +226,11 @@ public class AddTaskActivity extends AppCompatActivity {
         spinner.setAdapter(spinnerArrayAdapter);
 
     }
+    public Task getCurrentTask() {
+        return currentTask;
+    }
 
+    public void setCurrentTask(Task currentTask) {
+        this.currentTask = currentTask;
+    }
 }
