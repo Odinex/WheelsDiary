@@ -110,9 +110,9 @@ public class TaskActivity extends AppCompatActivity {
             detailsInput.setText(currentTask.getDetails());
             dateScheduled.setText(format.format(currentTask.getDateScheduled()));
             TextView textView = findViewById(R.id.task_title);
-            String text = "Task " + currentTask.getTaskId();
+            String text = "Task " + currentTask.getId();
             textView.setText(text);
-            String buttonSaveText = "Save Task " + currentTask.getTaskId();
+            String buttonSaveText = "Save Task " + currentTask.getId();
             addTaskButton.setText(buttonSaveText);
         }
         addTaskButton.setOnClickListener(new View.OnClickListener() {

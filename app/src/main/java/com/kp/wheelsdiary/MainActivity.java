@@ -16,7 +16,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,8 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -398,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onClick(View view) {
                     Intent editTaskIntent = new Intent(view.getContext(), TaskActivity.class);
-                    editTaskIntent.putExtra("TASK_ID", task.getTaskId());
+                    editTaskIntent.putExtra("TASK_ID", task.getId());
                     editTaskIntent.putExtra("MODE", "EDIT");
 
                     startActivityForResult(editTaskIntent, EDIT_TASK_INTENT);

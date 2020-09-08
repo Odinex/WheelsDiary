@@ -11,33 +11,33 @@ public class Task {
     private String otherTaskType;
     private String details;
     private String wheelName;
-    private long taskId;
+    private long id;
 
-    public Task(Date dateCreated, Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, String wheelName, long taskId) {
+    public Task(Date dateCreated, Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, String wheelName, long id) {
         this.dateCreated = dateCreated;
         this.dateScheduled = dateScheduled;
         this.taskType = taskType;
         this.otherTaskType = otherTaskType;
         this.details = details;
         this.wheelName = wheelName;
-        this.taskId = taskId;
+        this.id = id;
     }
 
-    public Task(Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, String wheelName, long taskId) {
+    public Task(Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, String wheelName, long id) {
         this.dateScheduled = dateScheduled;
         this.taskType = taskType;
         this.otherTaskType = otherTaskType;
         this.details = details;
         this.wheelName = wheelName;
-        this.taskId = taskId;
+        this.id = id;
     }
 
-    public Task(Date dateScheduled, TaskTypeEnum taskType, String details, String wheelName, long taskId) {
+    public Task(Date dateScheduled, TaskTypeEnum taskType, String details, String wheelName, long id) {
         this.dateScheduled = dateScheduled;
         this.taskType = taskType;
         this.details = details;
         this.wheelName = wheelName;
-        this.taskId = taskId;
+        this.id = id;
     }
 
     public Date getDateCreated() {
@@ -100,11 +100,11 @@ public class Task {
                 '}';
     }
 
-    public long getTaskId() {
-        return taskId;
+    public long getId() {
+        return id;
     }
 
-    public void setTaskId(long taskId) {
-        this.taskId = taskId;
+    public void setId(long id) {
+        this.id = id;
     }
 }

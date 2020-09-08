@@ -6,12 +6,8 @@ import com.kp.wheelsdiary.enums.TaskTypeEnum;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class TaskService {
     private static List<Task> tasks = new ArrayList<>();
@@ -63,7 +59,7 @@ public class TaskService {
 
     public static Task getTaskById(Long taskId) throws Exception {
         for(Task current : tasks) {
-            if(current.getTaskId() == taskId) {
+            if(current.getId() == taskId) {
                 return current;
             }
         }
@@ -72,7 +68,7 @@ public class TaskService {
 
     public static void updateTask(Task currentTask) {
         for(int i = 0; i < tasks.size(); i++) {
-            if(tasks.get(i).getTaskId() == currentTask.getTaskId()) {
+            if(tasks.get(i).getId() == currentTask.getId()) {
                 tasks.set(i,currentTask);
             }
         }
