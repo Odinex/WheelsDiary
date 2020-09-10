@@ -1,5 +1,6 @@
 package com.kp.wheelsdiary.service;
 
+import com.kp.wheelsdiary.data.model.User;
 import com.kp.wheelsdiary.dto.Wheel;
 
 import java.util.Collection;
@@ -11,6 +12,7 @@ public class WheelService {
     private static Map<String,Wheel> wheels = new HashMap<>();
 
 
+    private static User currentUser = null;
     public static Collection<Wheel> getWheels() {
         fillWheels();
         return wheels.values();
@@ -56,4 +58,12 @@ public class WheelService {
     public static Wheel getWheelByName(String tabName) {
         return wheels.get(tabName);
     }
+
+    public static User getCurrentUser() {
+        return currentUser;
+    }
+    public static void setCurrentUser(User currentUser) {
+        WheelService.currentUser = currentUser;
+    }
+
 }

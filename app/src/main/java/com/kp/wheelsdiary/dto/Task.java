@@ -10,34 +10,45 @@ public class Task {
     private TaskTypeEnum taskType;
     private String otherTaskType;
     private String details;
-    private String wheelName;
+    private Wheel wheel;
     private long id;
 
-    public Task(Date dateCreated, Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, String wheelName, long id) {
+    public Task(Date dateCreated, Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, Wheel wheel, long id) {
         this.dateCreated = dateCreated;
         this.dateScheduled = dateScheduled;
         this.taskType = taskType;
         this.otherTaskType = otherTaskType;
         this.details = details;
-        this.wheelName = wheelName;
+        this.wheel = wheel;
         this.id = id;
     }
 
-    public Task(Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, String wheelName, long id) {
+    public Task(Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details,  Wheel wheel, long id) {
         this.dateScheduled = dateScheduled;
         this.taskType = taskType;
         this.otherTaskType = otherTaskType;
         this.details = details;
-        this.wheelName = wheelName;
+        this.wheel = wheel;
         this.id = id;
     }
 
-    public Task(Date dateScheduled, TaskTypeEnum taskType, String details, String wheelName, long id) {
+    public Task(Date dateScheduled, TaskTypeEnum taskType, String details,  Wheel wheel, long id) {
         this.dateScheduled = dateScheduled;
         this.taskType = taskType;
         this.details = details;
-        this.wheelName = wheelName;
+        this.wheel = wheel;
         this.id = id;
+    }
+
+    public Task() {
+    }
+
+    public Wheel getWheel() {
+        return wheel;
+    }
+
+    public void setWheel(Wheel wheel) {
+        this.wheel = wheel;
     }
 
     public Date getDateCreated() {
@@ -80,14 +91,6 @@ public class Task {
         this.details = details;
     }
 
-    public String getWheelName() {
-        return wheelName;
-    }
-
-    public void setWheelName(String wheelName) {
-        this.wheelName = wheelName;
-    }
-
     @Override
     public String toString() {
         return "Task{" +
@@ -96,7 +99,8 @@ public class Task {
                 ", taskType=" + taskType +
                 ", otherTaskType='" + otherTaskType + '\'' +
                 ", details='" + details + '\'' +
-                ", wheelName='" + wheelName + '\'' +
+                ", wheel=" + wheel +
+                ", id=" + id +
                 '}';
     }
 

@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.kp.wheelsdiary.dto.Task;
+import com.kp.wheelsdiary.dto.Wheel;
 import com.kp.wheelsdiary.enums.TaskTypeEnum;
 import com.kp.wheelsdiary.service.TaskService;
 import com.kp.wheelsdiary.service.WheelService;
@@ -52,7 +53,7 @@ public class TaskActivity extends AppCompatActivity {
             Long taskId = getIntent().getLongExtra("TASK_ID", -1L);
             try {
                 currentTask = TaskService.getTaskById(taskId);
-                tabName = currentTask.getWheelName();
+                tabName = currentTask.getWheel().getName();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -133,14 +134,16 @@ public class TaskActivity extends AppCompatActivity {
                         Task task;
                         String details = detailsInput.getText().toString();
                         String wheelName = (String) carSpinner.getSelectedItem();
+
+                        Wheel wheelByName = WheelService.getWheelByName(wheelName);
                         if(currentTask == null) {
                             if (taskType != TaskTypeEnum.OTHER) {
                                 task = new Task(dateScheduled, taskType,
-                                        details, wheelName, TaskService.getNextId());
+                                        details, wheelByName, TaskService.getNextId());
                             } else {
                                 String otherTaskType = otherTypeEditText.getText().toString();
                                 task = new Task(dateScheduled, taskType, otherTaskType,
-                                        details, wheelName, TaskService.getNextId());
+                                        details, wheelByName, TaskService.getNextId());
                             }
                             TaskService.saveTask(task);
                         } else {
@@ -150,7 +153,7 @@ public class TaskActivity extends AppCompatActivity {
                                 currentTask.setOtherTaskType(otherTypeEditText.getText().toString());
                             }
                             currentTask.setDetails(details);
-                            currentTask.setWheelName(wheelName);
+                            currentTask.setWheel(wheelByName);
                             TaskService.updateTask(currentTask);
                         }
                         Intent returnIntent = new Intent();

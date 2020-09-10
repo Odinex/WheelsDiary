@@ -1,10 +1,16 @@
 package com.kp.wheelsdiary.service;
 
+import android.content.Context;
+
+import com.google.gson.Gson;
 import com.kp.wheelsdiary.dto.Task;
 import com.kp.wheelsdiary.dto.Wheel;
 import com.kp.wheelsdiary.enums.TaskTypeEnum;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -18,15 +24,18 @@ public class TaskService {
         return nextId++;
     }
     public static List<Task> getTasks() {
+        // Instantiate the RequestQueue.
+
+
         if(tasks.isEmpty()) {
             for(Wheel wheel : WheelService.getWheels()) {
                 for (int i = 0; i < 4; i++) {
                     TaskTypeEnum value = TaskTypeEnum.values()[i];
                     Task task;
                     if (value != TaskTypeEnum.OTHER) {
-                        task = new Task(sheduleDateAfterMonths(i), value, "task for " + wheel.getName(), wheel.getName(),getNextId());
+                        task = new Task(sheduleDateAfterMonths(i), value, "task for " + wheel.getName(), wheel,getNextId());
                     } else {
-                        task = new Task(sheduleDateAfterMonths(i), value, "otherType","task for " + wheel.getName(), wheel.getName(),getNextId());
+                        task = new Task(sheduleDateAfterMonths(i), value, "otherType","task for " + wheel.getName(), wheel,getNextId());
                     }
                     saveTask(task);
                 }
@@ -49,7 +58,7 @@ public class TaskService {
     public static List<Task> getTasksForWheel(final String wheelName) {
         List<Task> filtered = new ArrayList<>();
         for(Task task : tasks) {
-            if(task.getWheelName().equals(wheelName)) {
+            if(task.getWheel().getName().equals(wheelName)) {
                 filtered.add(task);
             }
         }
