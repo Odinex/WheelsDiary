@@ -6,10 +6,10 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.kp.wheelsdiary.dto.Task;
+import com.kp.wheelsdiary.dto.WheelTask;
 import com.kp.wheelsdiary.dto.Wheel;
 import com.kp.wheelsdiary.enums.TaskTypeEnum;
-import com.kp.wheelsdiary.service.TaskService;
+import com.kp.wheelsdiary.service.WheelTaskService;
 import com.kp.wheelsdiary.service.WheelService;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,7 +34,7 @@ import java.util.Objects;
 
 public class TaskActivity extends AppCompatActivity {
 
-    private Task currentTask = null;
+    private WheelTask currentWheelTask = null;
     public static final int OTHER_TASK_TYPE_INDEX = TaskTypeEnum.OTHER.ordinal() + 1;
     private SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 
@@ -52,8 +52,8 @@ public class TaskActivity extends AppCompatActivity {
         } else if (Objects.equals(mode, "EDIT")) {
             Long taskId = getIntent().getLongExtra("TASK_ID", -1L);
             try {
-                currentTask = TaskService.getTaskById(taskId);
-                tabName = currentTask.getWheel().getName();
+                currentWheelTask = WheelTaskService.getTaskById(taskId);
+                tabName = currentWheelTask.getWheel().getName();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -100,20 +100,20 @@ public class TaskActivity extends AppCompatActivity {
 
         final Button addTaskButton = findViewById(R.id.addTaskButton);
 
-        if (currentTask != null) {
-            taskTypeSpinner.setSelection(currentTask.getTaskType().ordinal() + 1);
+        if (currentWheelTask != null) {
+            taskTypeSpinner.setSelection(currentWheelTask.getTaskType().ordinal() + 1);
             final EditText otherTypeEditText = findViewById(R.id.otherTypeEditText);
             final EditText detailsInput = findViewById(R.id.detailsInput);
             final EditText dateScheduled = findViewById(R.id.dateScheduled);
-            if (currentTask.getTaskType() == TaskTypeEnum.OTHER) {
-                otherTypeEditText.setText(currentTask.getOtherTaskType());
+            if (currentWheelTask.getTaskType() == TaskTypeEnum.OTHER) {
+                otherTypeEditText.setText(currentWheelTask.getOtherTaskType());
             }
-            detailsInput.setText(currentTask.getDetails());
-            dateScheduled.setText(format.format(currentTask.getDateScheduled()));
+            detailsInput.setText(currentWheelTask.getDetails());
+            dateScheduled.setText(format.format(currentWheelTask.getDateScheduled()));
             TextView textView = findViewById(R.id.task_title);
-            String text = "Task " + currentTask.getId();
+            String text = "Task " + currentWheelTask.getId();
             textView.setText(text);
-            String buttonSaveText = "Save Task " + currentTask.getId();
+            String buttonSaveText = "Save Task " + currentWheelTask.getId();
             addTaskButton.setText(buttonSaveText);
         }
         addTaskButton.setOnClickListener(new View.OnClickListener() {
@@ -131,30 +131,30 @@ public class TaskActivity extends AppCompatActivity {
                         Date dateScheduled = format.parse(dateScheduledView.getText().toString());
 
                         TaskTypeEnum taskType = TaskTypeEnum.valueOf((String) taskTypeSpinner.getSelectedItem());
-                        Task task;
+                        WheelTask wheelTask;
                         String details = detailsInput.getText().toString();
                         String wheelName = (String) carSpinner.getSelectedItem();
 
                         Wheel wheelByName = WheelService.getWheelByName(wheelName);
-                        if(currentTask == null) {
+                        if(currentWheelTask == null) {
                             if (taskType != TaskTypeEnum.OTHER) {
-                                task = new Task(dateScheduled, taskType,
-                                        details, wheelByName, TaskService.getNextId());
+                                wheelTask = new WheelTask(dateScheduled, taskType,
+                                        details, wheelByName, WheelTaskService.getNextId());
                             } else {
                                 String otherTaskType = otherTypeEditText.getText().toString();
-                                task = new Task(dateScheduled, taskType, otherTaskType,
-                                        details, wheelByName, TaskService.getNextId());
+                                wheelTask = new WheelTask(dateScheduled, taskType, otherTaskType,
+                                        details, wheelByName, WheelTaskService.getNextId());
                             }
-                            TaskService.saveTask(task);
+                            WheelTaskService.saveTask(wheelTask);
                         } else {
-                            currentTask.setDateScheduled(dateScheduled);
-                            currentTask.setTaskType(taskType);
+                            currentWheelTask.setDateScheduled(dateScheduled);
+                            currentWheelTask.setTaskType(taskType);
                             if (taskType == TaskTypeEnum.OTHER) {
-                                currentTask.setOtherTaskType(otherTypeEditText.getText().toString());
+                                currentWheelTask.setOtherTaskType(otherTypeEditText.getText().toString());
                             }
-                            currentTask.setDetails(details);
-                            currentTask.setWheel(wheelByName);
-                            TaskService.updateTask(currentTask);
+                            currentWheelTask.setDetails(details);
+                            currentWheelTask.setWheel(wheelByName);
+                            WheelTaskService.updateTask(currentWheelTask);
                         }
                         Intent returnIntent = new Intent();
                         returnIntent.putExtra("RESULT", "OK");
@@ -237,11 +237,11 @@ public class TaskActivity extends AppCompatActivity {
 
     }
 
-    public Task getCurrentTask() {
-        return currentTask;
+    public WheelTask getCurrentWheelTask() {
+        return currentWheelTask;
     }
 
-    public void setCurrentTask(Task currentTask) {
-        this.currentTask = currentTask;
+    public void setCurrentWheelTask(WheelTask currentWheelTask) {
+        this.currentWheelTask = currentWheelTask;
     }
 }

@@ -1,8 +1,9 @@
-package com.kp.wheelsdiary.data;
+package com.kp.wheelsdiary.http;
 
 import android.os.AsyncTask;
 
 import com.google.gson.Gson;
+import com.kp.wheelsdiary.data.Result;
 import com.kp.wheelsdiary.data.model.User;
 import com.kp.wheelsdiary.service.WheelService;
 

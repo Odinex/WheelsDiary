@@ -1,7 +1,7 @@
 package com.kp.wheelsdiary.service;
 
 import com.google.gson.Gson;
-import com.kp.wheelsdiary.data.UserHttpClient;
+import com.kp.wheelsdiary.http.UserHttpClient;
 import com.kp.wheelsdiary.data.Result;
 import com.kp.wheelsdiary.data.model.User;
 import com.kp.wheelsdiary.tasks.UserLoginTask;

@@ -32,10 +32,10 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
-import com.kp.wheelsdiary.dto.Task;
+import com.kp.wheelsdiary.dto.WheelTask;
 import com.kp.wheelsdiary.dto.Wheel;
 import com.kp.wheelsdiary.enums.TaskTypeEnum;
-import com.kp.wheelsdiary.service.TaskService;
+import com.kp.wheelsdiary.service.WheelTaskService;
 import com.kp.wheelsdiary.service.WheelService;
 import com.kp.wheelsdiary.ui.login.LoginActivity;
 
@@ -267,14 +267,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         all.select();
     }
 
-    private List<Task> getTasks(String tabName) {
-        List<Task> tasks;
+    private List<WheelTask> getTasks(String tabName) {
+        List<WheelTask> wheelTasks;
         if (tabName.equals(ALL)) {
-            tasks = TaskService.getTasks();
+            wheelTasks = WheelTaskService.getWheelTasks();
         } else {
-            tasks = TaskService.getTasksForWheel(tabName);
+            wheelTasks = WheelTaskService.getTasksForWheel(tabName);
         }
-        return tasks;
+        return wheelTasks;
     }
 
     private void addTabs(TabLayout tabLayout) {
@@ -321,15 +321,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void reloadTasks(String tabName) {
         LinearLayout cardLayout = findViewById(R.id.cardLinearLayout);
         cardLayout.removeAllViews();
-        List<Task> tasks = getTasks(tabName);
+        List<WheelTask> wheelTasks = getTasks(tabName);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int screenHeight = displayMetrics.heightPixels;
         int screenWidth = displayMetrics.widthPixels;
 
-        for (final Task task : tasks) {
-            System.out.println(new Date() + "is now. Task:  " + task);
+        for (final WheelTask wheelTask : wheelTasks) {
+            System.out.println(new Date() + "is now. Task:  " + wheelTask);
             CardView cardView = new CardView(cardLayout.getContext());
             CardView.LayoutParams cardViewParams = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             cardViewParams.setMargins(16, 16, 16, 16);
@@ -367,10 +367,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             layoutParamsText.setMargins(16, 16, 16, 16);
             titleTextView.setLayoutParams(layoutParamsText);
-            if (task.getTaskType() != TaskTypeEnum.OTHER) {
-                titleTextView.setText(task.getTaskType().name());
+            if (wheelTask.getTaskType() != TaskTypeEnum.OTHER) {
+                titleTextView.setText(wheelTask.getTaskType().name());
             } else {
-                titleTextView.setText(task.getOtherTaskType());
+                titleTextView.setText(wheelTask.getOtherTaskType());
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 titleTextView.setTextAppearance(R.style.TextAppearance_AppCompat_Title);
@@ -378,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             titleTextView.setTextColor(Color.WHITE);
             textLayout.addView(titleTextView);
             TextView descriptionTextView = new TextView(textLayout.getContext());
-            descriptionTextView.setText(String.format("%s scheduled for %s", task.getDetails(), task.getDateScheduled()));
+            descriptionTextView.setText(String.format("%s scheduled for %s", wheelTask.getDetails(), wheelTask.getDateScheduled()));
             descriptionTextView.setTextColor(Color.WHITE);
             descriptionTextView.setLayoutParams(layoutParamsText);
             textLayout.addView(descriptionTextView);
@@ -395,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onClick(View view) {
                     Intent editTaskIntent = new Intent(view.getContext(), TaskActivity.class);
-                    editTaskIntent.putExtra("TASK_ID", task.getId());
+                    editTaskIntent.putExtra("TASK_ID", wheelTask.getId());
                     editTaskIntent.putExtra("MODE", "EDIT");
 
                     startActivityForResult(editTaskIntent, EDIT_TASK_INTENT);

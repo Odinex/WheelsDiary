@@ -4,7 +4,7 @@ import com.kp.wheelsdiary.enums.TaskTypeEnum;
 
 import java.util.Date;
 
-public class Task {
+public class WheelTask {
     private Date dateCreated;
     private Date dateScheduled;
     private TaskTypeEnum taskType;
@@ -13,7 +13,7 @@ public class Task {
     private Wheel wheel;
     private long id;
 
-    public Task(Date dateCreated, Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, Wheel wheel, long id) {
+    public WheelTask(Date dateCreated, Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, Wheel wheel, long id) {
         this.dateCreated = dateCreated;
         this.dateScheduled = dateScheduled;
         this.taskType = taskType;
@@ -23,7 +23,7 @@ public class Task {
         this.id = id;
     }
 
-    public Task(Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details,  Wheel wheel, long id) {
+    public WheelTask(Date dateScheduled, TaskTypeEnum taskType, String otherTaskType, String details, Wheel wheel, long id) {
         this.dateScheduled = dateScheduled;
         this.taskType = taskType;
         this.otherTaskType = otherTaskType;
@@ -32,7 +32,7 @@ public class Task {
         this.id = id;
     }
 
-    public Task(Date dateScheduled, TaskTypeEnum taskType, String details,  Wheel wheel, long id) {
+    public WheelTask(Date dateScheduled, TaskTypeEnum taskType, String details, Wheel wheel, long id) {
         this.dateScheduled = dateScheduled;
         this.taskType = taskType;
         this.details = details;
@@ -40,7 +40,7 @@ public class Task {
         this.id = id;
     }
 
-    public Task() {
+    public WheelTask() {
     }
 
     public Wheel getWheel() {

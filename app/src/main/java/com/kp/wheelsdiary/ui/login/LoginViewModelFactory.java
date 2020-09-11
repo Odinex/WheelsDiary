@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.annotation.NonNull;
 
-import com.kp.wheelsdiary.data.UserHttpClient;
+import com.kp.wheelsdiary.http.UserHttpClient;
 import com.kp.wheelsdiary.service.UserService;
 
 /**
