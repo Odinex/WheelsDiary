@@ -84,14 +84,14 @@ public class WheelTaskHttpClient {
     }
 
 
-    public WheelTask[] saveWheelTask(String userId) {
+    public String getWheelTasksByUserId(String userId) {
         String url = Constants.WHEELTASKS_BY_OWNER_ID;
         Request request = new Request.Builder().addHeader("userId",userId).url(url).build();
         System.out.println(request.toString());
         Call call = client.newCall(request);
         try (Response response = call.execute()) {
             String responseString = response.body().string();
-            return gson.fromJson(responseString, WheelTask[].class);
+            return responseString;
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -128,7 +128,7 @@ public class WheelTaskHttpClient {
         return "ERROR";
     }
 
-    public WheelTask[] getWheelTasksByUserIdAndWheelId(String userId, String wheelId) {
+    public String getWheelTasksByUserIdAndWheelId(String userId, String wheelId) {
         String url = Constants.WHEELTASKS_BY_OWNER_ID_AND_WHEEL_ID;
         Request request = new Request.Builder().addHeader("userId",userId)
                 .addHeader("wheelId",wheelId).url(url).build();
@@ -136,7 +136,7 @@ public class WheelTaskHttpClient {
         Call call = client.newCall(request);
         try (Response response = call.execute()) {
             String responseString = response.body().string();
-            return gson.fromJson(responseString, WheelTask[].class);
+            return responseString;
         }catch (Exception e) {
             e.printStackTrace();
         }
