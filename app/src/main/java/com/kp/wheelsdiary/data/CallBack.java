@@ -1,5 +1,5 @@
 package com.kp.wheelsdiary.data;
 
-public interface VolleyCallBack {
+public interface CallBack {
     void onSuccess();
 }

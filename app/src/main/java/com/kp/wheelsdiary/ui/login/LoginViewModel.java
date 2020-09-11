@@ -4,15 +4,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import android.content.Context;
 import android.util.Patterns;
 
-import com.kp.wheelsdiary.data.VolleyCallBack;
 import com.kp.wheelsdiary.service.UserService;
 import com.kp.wheelsdiary.data.Result;
 import com.kp.wheelsdiary.data.model.User;
 import com.kp.wheelsdiary.R;
-import com.kp.wheelsdiary.service.WheelService;
+
+import java.util.concurrent.ExecutionException;
 
 public class LoginViewModel extends ViewModel {
 
@@ -32,11 +31,11 @@ public class LoginViewModel extends ViewModel {
         return loginResult;
     }
 
-    public void login(String username, String password) {
+    public void login(String username, String password) throws ExecutionException, InterruptedException {
         // can be launched in a separate asynchronous job
-        Result<User> result = userService.login(username, password);
+        Result.Success<User> result = userService.login(username, password);
 
-        if (result instanceof Result.Success) {
+        if (result != null) {
             User data = ((Result.Success<User>) result).getData();
             loginResult.setValue(new LoginResult(new LoggedInUserView(data.getName())));
         } else {
@@ -71,7 +70,7 @@ public class LoginViewModel extends ViewModel {
         return password != null && password.trim().length() > 5;
     }
 
-    public void register(String username, String password) {
+    public void register(String username, String password) throws ExecutionException, InterruptedException {
         Result<User> result = userService.register(username, password);
 
         if (result instanceof Result.Success) {

@@ -4,6 +4,10 @@ import com.google.gson.Gson;
 import com.kp.wheelsdiary.data.UserHttpClient;
 import com.kp.wheelsdiary.data.Result;
 import com.kp.wheelsdiary.data.model.User;
+import com.kp.wheelsdiary.tasks.UserLoginTask;
+import com.kp.wheelsdiary.tasks.UserRegisterTask;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -12,7 +16,10 @@ import com.kp.wheelsdiary.data.model.User;
 public class UserService {
 
     private static UserService instance;
-    private UserHttpClient dataSource;
+    private UserHttpClient httpClient;
+    private UserLoginTask userLoginTask;
+
+    private UserRegisterTask userRegisterTask;
     Gson gson=new Gson();
 
     // If user credentials will be cached in local storage, it is recommended it be encrypted
@@ -21,7 +28,7 @@ public class UserService {
 
     // private constructor : singleton access
     private UserService(UserHttpClient dataSource) {
-        this.dataSource = dataSource;
+        this.httpClient = dataSource;
     }
 
     public static UserService getInstance(UserHttpClient userHttpClient) {
@@ -37,7 +44,7 @@ public class UserService {
 
     public void logout() {
         user = null;
-        dataSource.logout();
+        httpClient.logout();
     }
 
     private void setLoggedInUser(User user) {
@@ -46,19 +53,29 @@ public class UserService {
         // @see https://developer.android.com/training/articles/keystore
     }
 
-    public Result<User> login(String username, String password) {
+    public Result.Success<User> login(String username, String password) throws ExecutionException, InterruptedException {
 // Request a string response from the provided URL.
-
-        Result<User> result = dataSource.login(username, password);
-        if (result instanceof Result.Success) {
-            setLoggedInUser(((Result.Success<User>) result).getData());
-        }
-        return result;
+        WheelService.setCurrentUser(null);
+        System.out.println(username+password) ;
+        userLoginTask = new UserLoginTask(username,password,httpClient);
+        String s = userLoginTask.execute().get();
+        System.out.println("Login result " + s);
+        while(WheelService.getCurrentUser() == null) {
+             try {
+                 Thread.sleep(2000);
+             } catch (InterruptedException e) {
+                 e.printStackTrace();
+             }
+         }
+        return new Result.Success<>(WheelService.getCurrentUser());
     }
 
-    public Result<User> register(final String username, final String password) {
-
-
-        return null;
+    public Result<User> register(final String username, final String password) throws ExecutionException, InterruptedException {
+        WheelService.setCurrentUser(null);
+        System.out.println(username+password) ;
+        userRegisterTask = new UserRegisterTask(username,password,httpClient);
+        String s = userRegisterTask.execute().get();
+        System.out.println("register result " + s);
+        return new Result.Success<>(WheelService.getCurrentUser());
     }
 }

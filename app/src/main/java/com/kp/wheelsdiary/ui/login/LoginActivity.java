@@ -25,6 +25,8 @@ import android.widget.Toast;
 
 import com.kp.wheelsdiary.R;
 
+import java.util.concurrent.ExecutionException;
+
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
@@ -49,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
                 loginButton.setEnabled(loginFormState.isDataValid());
+                register.setEnabled(loginFormState.isDataValid());
                 if (loginFormState.getUsernameError() != null) {
                     usernameEditText.setError(getString(loginFormState.getUsernameError()));
                 }
@@ -106,8 +109,12 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+                    try {
+                        loginViewModel.login(usernameEditText.getText().toString(),
+                                passwordEditText.getText().toString());
+                    } catch (ExecutionException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
                 return false;
             }
@@ -117,8 +124,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                try {
+                    loginViewModel.login(usernameEditText.getText().toString(),
+                            passwordEditText.getText().toString());
+                } catch (ExecutionException | InterruptedException e) {
+                    loadingProgressBar.setVisibility(View.GONE);
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -126,8 +138,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.register(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                try {
+                    loginViewModel.register(usernameEditText.getText().toString(),
+                            passwordEditText.getText().toString());
+                } catch (ExecutionException | InterruptedException e) {
+                    loadingProgressBar.setVisibility(View.GONE);
+                    e.printStackTrace();
+                }
             }
         });
     }

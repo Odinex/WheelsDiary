@@ -59,10 +59,10 @@ public class WheelService {
         return wheels.get(tabName);
     }
 
-    public static User getCurrentUser() {
+    public static synchronized User getCurrentUser() {
         return currentUser;
     }
-    public static void setCurrentUser(User currentUser) {
+    public static synchronized void setCurrentUser(User currentUser) {
         WheelService.currentUser = currentUser;
     }
 
