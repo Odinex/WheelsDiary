@@ -45,7 +45,15 @@ public class WheelService {
     }
 
     public static Set<String> getWheelNameSet() {
-        //fillWheels();
+        if(currentUser != null && (wheels == null || wheels.isEmpty())) {
+            try {
+                fillWheels();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return wheels.keySet();
     }
     private static String[] convert(Set<String> setOfString)
@@ -101,5 +109,14 @@ public class WheelService {
 
     public static synchronized void clearWheels() {
         wheels.clear();
+    }
+
+    public static void updateWheel(Wheel currentWheel) throws Exception {
+        WheelsAsyncTask save = new WheelsAsyncTask(WheelTaskRequests.UPDATE,currentWheel,new WheelHttpClient());
+        String s = save.execute().get();
+        clearWheels();
+        if(s.equals("ERROR")) {
+            throw new Exception("Save task failed");
+        }
     }
 }

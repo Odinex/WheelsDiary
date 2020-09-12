@@ -20,13 +20,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.kp.wheelsdiary.data.model.User;
 import com.kp.wheelsdiary.dto.Wheel;
 import com.kp.wheelsdiary.service.WheelService;
+import com.kp.wheelsdiary.service.WheelTaskService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -69,6 +72,7 @@ public class WheelActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
+    private Wheel currentWheel = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +80,28 @@ public class WheelActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_wheel);
         // Get reference of widgets from XML layout
+        String mode = getIntent().getStringExtra("MODE");
+        if (Objects.equals(mode, "EDIT")) {
+            String wheelName = getIntent().getStringExtra("WHEEL_NAME");
+            if (wheelName == null || wheelName.isEmpty()) {
+                Intent returnIntent = new Intent();
+                setResult(Activity.RESULT_CANCELED, returnIntent);
+                finish();
+            }
+            try {
+                currentWheel = WheelService.getWheelByName(wheelName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         // Initializing a String Array
         String[] brands = new String[]{
                 "Select a make...",
                 "AUDI",
-                "Nissan"
+                "Nissan",
+                "Lamborghini",
+                "Porsche"
         };
 
         final Spinner brandSpinner = findViewById(R.id.brandSpinner);
@@ -94,6 +114,25 @@ public class WheelActivity extends AppCompatActivity {
             }
         });
         final Spinner modelSpinner = findViewById(R.id.modelSpinner);
+        if (currentWheel != null) {
+            int makeIndex = getIndex(currentWheel.getMake(), brands);
+            if (makeIndex != -1) {
+                brandSpinner.setSelection(makeIndex);
+            }
+            if (currentWheel.getVariant() != null && !currentWheel.getVariant().isEmpty()) {
+                EditText variantInput = findViewById(R.id.variantInput);
+                variantInput.setText(currentWheel.getVariant());
+            }
+            if (currentWheel.getName() != null && !currentWheel.getName().isEmpty()) {
+                EditText name = findViewById(R.id.nameInput);
+                name.setText(currentWheel.getName());
+            }
+            TextView titleView = findViewById(R.id.wheel_title);
+            String title = "Car " + currentWheel.getId();
+            titleView.setText(title);
+            String save_car = "Save car";
+            button.setText(save_car);
+        }
         brandSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -106,8 +145,19 @@ public class WheelActivity extends AppCompatActivity {
                             (getApplicationContext(), "Selected make: " + brand, Toast.LENGTH_SHORT)
                             .show();
                     try {
-                        String[] models = getModelsForBrand(brand);
+                        String[] models = getModelsForMake(brand);
                         setSpinnerValues(models, modelSpinner);
+                        if (currentWheel != null && currentWheel.getMake().equals(brand)) {
+                            try {
+                                int modelIndex = getIndex(currentWheel.getModel(), getModelsForMake(brandSpinner.getSelectedItem().toString()));
+
+                                if (modelIndex != -1) {
+                                    modelSpinner.setSelection(modelIndex);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -120,6 +170,7 @@ public class WheelActivity extends AppCompatActivity {
 
             }
         });
+
 
         // Set up the user interaction to manually show or hide the system UI.
 //        mContentView.setOnClickListener(new View.OnClickListener() {
@@ -137,15 +188,36 @@ public class WheelActivity extends AppCompatActivity {
         // while interacting with the UI.
     }
 
-    private String[] getModelsForBrand(String brand) throws Exception {
+    private int getIndex(String tabName, String[] wheelNameArray) {
+        int wheelNameIndex = -1;
+        for (int i = 0, wheelNameArrayLength = wheelNameArray.length; i < wheelNameArrayLength; i++) {
+            String wheelName = wheelNameArray[i];
+            if (tabName != null && !tabName.isEmpty() && wheelName.equals(tabName)) {
+                wheelNameIndex = i;
+                break;
+            }
+        }
+        return wheelNameIndex;
+    }
+
+    private String[] getModelsForMake(String make) throws Exception {
         List<String> models = new ArrayList<>();
         models.add("Select a model...");
-        if (brand.equals("AUDI")) {
-            models.addAll(Collections.singletonList("A4"));
-        } else if (brand.equals("Nissan")) {
-            models.addAll(Collections.singletonList("Micra"));
-        } else {
-            throw new Exception("Invalid brand");
+        switch (make) {
+            case "AUDI":
+                models.addAll(Collections.singletonList("A4"));
+                break;
+            case "Nissan":
+                models.addAll(Collections.singletonList("Micra"));
+                break;
+            case "Lamborghini":
+                models.addAll(Arrays.asList("Aventador S", "URUS"));
+                break;
+            case "Porsche":
+                models.addAll(Arrays.asList("718 Boxster S", "911 Carrera  4"));
+                break;
+            default:
+                throw new Exception("Invalid make");
         }
         return models.toArray(new String[0]);
     }
@@ -204,18 +276,37 @@ public class WheelActivity extends AppCompatActivity {
         if (brandSpinner.getSelectedItemId() > 0 && modelSpinner.getSelectedItemId() > 0 && nameEditText.getText() != null
                 && !nameEditText.getText().toString().equals("")) {
             Intent returnIntent = new Intent();
-            Wheel wheel = new Wheel(null, (String) brandSpinner.getSelectedItem(), (String) modelSpinner.getSelectedItem(),
-                    nameEditText.getText().toString(), variantInput.getText().toString(), WheelService.getCurrentUser());
-            try {
-                WheelService.saveWheel(wheel);
-            } catch (Exception e) {
-                e.printStackTrace();
-                setResult(Activity.RESULT_CANCELED, returnIntent);
+            String make = (String) brandSpinner.getSelectedItem();
+            String model = (String) modelSpinner.getSelectedItem();
+            String name = nameEditText.getText().toString();
+            String variant = variantInput.getText() != null ? variantInput.getText().toString() : null;
+            User currentUser = WheelService.getCurrentUser();
+            if (currentWheel == null) {
+
+                Wheel wheel = new Wheel(null, make, model,
+                        name, variant, currentUser);
+                try {
+                    WheelService.saveWheel(wheel);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    setResult(Activity.RESULT_CANCELED, returnIntent);
+                    finish();
+                }
+                returnIntent.putExtra("name", name);
+                setResult(Activity.RESULT_OK, returnIntent);
                 finish();
+            } else {
+                try {
+                    Wheel wheel = new Wheel(currentWheel.getId(), make, model,
+                            name, variant, currentUser);
+                    WheelService.updateWheel(wheel);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    returnIntent = new Intent();
+                    setResult(Activity.RESULT_CANCELED, returnIntent);
+                    finish();
+                }
             }
-            returnIntent.putExtra("name", nameEditText.getText().toString());
-            setResult(Activity.RESULT_OK, returnIntent);
-            finish();
 
         } else {
             final Snackbar errorSnackBar = Snackbar

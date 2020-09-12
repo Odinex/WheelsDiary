@@ -3,12 +3,12 @@ package com.kp.wheelsdiary.dto;
 import com.kp.wheelsdiary.data.model.User;
 
 public class Wheel {
-    private final Long id;
-    private final String make;
-    private final String model;
-    private final String name;
-    private final String variant;
-    private final User user;
+    private Long id;
+    private String make;
+    private String model;
+    private String name;
+    private String variant;
+    private User user;
 
     public Wheel(Long id, String make, String model, String name, String variant, User user) {
         this.id = id;
@@ -17,6 +17,37 @@ public class Wheel {
         this.model = model;
         this.name = name;
         this.variant = variant;
+        this.user = user;
+    }
+
+    public Wheel() {
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setMake(String make) {
+        this.make = make;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setVariant(String variant) {
+        this.variant = variant;
+    }
+
+    public void setUser(User user) {
         this.user = user;
     }
 

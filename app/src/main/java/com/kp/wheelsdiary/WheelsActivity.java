@@ -156,7 +156,7 @@ public class WheelsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent editTaskIntent = new Intent(view.getContext(), WheelActivity.class);
-                    editTaskIntent.putExtra("WHEEL_ID", wheel.getId());
+                    editTaskIntent.putExtra("WHEEL_NAME", wheel.getName());
                     editTaskIntent.putExtra("MODE", "EDIT");
 
                     startActivityForResult(editTaskIntent, EDIT_WHEEL_INTENT);

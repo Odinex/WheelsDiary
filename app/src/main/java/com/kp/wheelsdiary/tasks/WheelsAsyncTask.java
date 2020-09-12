@@ -33,15 +33,13 @@ public class WheelsAsyncTask extends AsyncTask<Void, Void, String> {
 
     @Override
     protected String doInBackground(Void... voids) {
-        if(request == WheelTaskRequests.BY_USER_ID) {
-            String wheelsByUserId = httpClient.getWheelsByUserId(userId.toString());
-            return wheelsByUserId;
-
-
-        } else if(request == WheelTaskRequests.BY_ID) {
-            //return httpClient.ge(userId.toString(), wheelId.toString());
-        } else if (request == WheelTaskRequests.SAVE) {
-            return httpClient.saveWheel(wheel);
+        switch (request) {
+            case BY_USER_ID:
+                return httpClient.getWheelsByUserId(userId.toString());
+            case SAVE:
+                return httpClient.saveWheel(wheel);
+            case UPDATE:
+                return httpClient.updateWheel(wheel);
         }
         return null;
     }
