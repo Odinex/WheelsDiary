@@ -104,21 +104,7 @@ public class LoginActivity extends AppCompatActivity {
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    try {
-                        loginViewModel.login(usernameEditText.getText().toString(),
-                                passwordEditText.getText().toString());
-                    } catch (ExecutionException | InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return false;
-            }
-        });
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override

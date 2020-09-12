@@ -24,10 +24,7 @@ public class WheelTaskService {
     }
     public static List<WheelTask> getWheelTasks() throws ExecutionException, InterruptedException {
         // Instantiate the RequestQueue.
-        WheelTasksAsyncTask wheelTasksAsyncTask = new WheelTasksAsyncTask(WheelTaskRequests.BY_USER_ID,
-                WheelService.getCurrentUser().getId(), new WheelTaskHttpClient());
-        WheelTask[] wheelTaskArray = gson.fromJson(wheelTasksAsyncTask.execute().get(), WheelTask[].class);
-        wheelTasks.addAll(Arrays.asList(wheelTaskArray));
+        getWheelTasksByUserId();
 
 //        if(WheelTaskService.wheelTasks.isEmpty()) {
 //            for(Wheel wheel : WheelService.getWheels()) {
@@ -46,6 +43,15 @@ public class WheelTaskService {
         return WheelTaskService.wheelTasks;
     }
 
+    private static void getWheelTasksByUserId() throws ExecutionException, InterruptedException {
+        if(WheelService.getCurrentUser() != null) {
+            WheelTasksAsyncTask wheelTasksAsyncTask = new WheelTasksAsyncTask(WheelTaskRequests.BY_USER_ID,
+                    WheelService.getCurrentUser().getId(), new WheelTaskHttpClient());
+            WheelTask[] wheelTaskArray = gson.fromJson(wheelTasksAsyncTask.execute().get(), WheelTask[].class);
+            wheelTasks.addAll(Arrays.asList(wheelTaskArray));
+        }
+    }
+
     private static Date scheduleDateAfterMonths(int i) {
         Calendar instance = Calendar.getInstance();
         instance.setTime(new Date());
@@ -57,7 +63,10 @@ public class WheelTaskService {
         wheelTasks.add(wheelTask);
     }
 
-    public static List<WheelTask> getTasksForWheel(final String wheelName) {
+    public static List<WheelTask> getTasksForWheel(final String wheelName) throws ExecutionException, InterruptedException {
+        if(wheelTasks == null || wheelTasks.isEmpty()) {
+            getWheelTasksByUserId();
+        }
         List<WheelTask> filtered = new ArrayList<>();
         for(WheelTask wheelTask : wheelTasks) {
             if(wheelTask.getWheel().getName().equals(wheelName)) {

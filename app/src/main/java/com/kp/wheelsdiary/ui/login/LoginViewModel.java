@@ -33,17 +33,17 @@ public class LoginViewModel extends ViewModel {
 
     public void login(String username, String password) throws ExecutionException, InterruptedException {
         // can be launched in a separate asynchronous job
-        Result.Success<User> result = userService.login(username, password);
+        Result result = userService.login(username, password);
 
-        if (result != null) {
-            User data = ((Result.Success<User>) result).getData();
+        if (result instanceof Result.Success) {
+            User data = (User) ((Result.Success) result).getData();
             loginResult.setValue(new LoginResult(new LoggedInUserView(data.getName())));
         } else {
             loginResult.setValue(new LoginResult(R.string.login_failed));
         }
     }
 
-    public void loginDataChanged(String username, String password) {
+    void loginDataChanged(String username, String password) {
         if (!isUserNameValid(username)) {
             loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
         } else if (!isPasswordValid(password)) {
@@ -70,14 +70,14 @@ public class LoginViewModel extends ViewModel {
         return password != null && password.trim().length() > 5;
     }
 
-    public void register(String username, String password) throws ExecutionException, InterruptedException {
-        Result<User> result = userService.register(username, password);
+    void register(String username, String password) throws ExecutionException, InterruptedException {
+        Result result = userService.register(username, password);
 
         if (result instanceof Result.Success) {
             User data = (User) ((Result.Success) result).getData();
             loginResult.setValue(new LoginResult(new LoggedInUserView(data.getName())));
         } else {
-            loginResult.setValue(new LoginResult(R.string.register_failed));
+            loginResult.setValue(new LoginResult(R.string.login_failed));
         }
     }
 }

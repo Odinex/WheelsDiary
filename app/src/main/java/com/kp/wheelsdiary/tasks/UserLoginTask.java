@@ -27,7 +27,10 @@ public class UserLoginTask extends AsyncTask<Void, Void, String> {
             Object object = ((Result.Success) login).getData();
             if(object instanceof  User) {
                 User data = (User) object;
-                System.out.println("do in background set wheelService");
+                System.out.println("do in background set userHttpClient user id " + data.getId());
+                if(data.getId() == null) {
+                    return null;
+                }
                 WheelService.setCurrentUser(data);
                 return gson.toJson(data);
             }
@@ -41,8 +44,11 @@ public class UserLoginTask extends AsyncTask<Void, Void, String> {
         System.out.println(s + "postExecute");
         if(WheelService.getCurrentUser() == null) {
             User user = gson.fromJson(s, User.class);
-
-            System.out.println("onPostExecute set wheelService");
+            if(user.getId() == null) {
+                System.out.println("null user id");
+                return;
+            }
+            System.out.println("onPostExecute  setCurrentUser");
             WheelService.setCurrentUser(user);
         }
     }

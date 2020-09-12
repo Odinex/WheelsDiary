@@ -1,13 +1,14 @@
 package com.kp.wheelsdiary.http;
 
-final class Constants {
+public final class Constants {
     private static final String LOCALHOST = "http://10.0.2.2:8080";
-    static final String REGISTER = LOCALHOST + "/public/users/register";
-    static final String LOGIN = LOCALHOST + "/public/users/login";
-    static final String WHEELTASKS_BY_USER_ID = LOCALHOST +"/tasks/ownerId";
-    static final String WHEELTASKS_BY_USER_ID_AND_WHEEL_ID = LOCALHOST +"/tasks/ids";
-    static final String WHEELTASK_BY_ID = LOCALHOST +"/tasks/id";
-    static final String SAVE_UPDATE_WHEELTASK = LOCALHOST +"/tasks";
-    static final String WHEELS_BY_USER_ID = LOCALHOST +"/wheels/userId";
+    public static final String REGISTER = LOCALHOST + "/public/users/register";
+    public static final String LOGIN = LOCALHOST + "/public/users/login";
+    public static final String WHEELTASKS_BY_USER_ID = LOCALHOST +"/tasks/ownerId";
+    public static final String WHEELTASKS_BY_USER_ID_AND_WHEEL_ID = LOCALHOST +"/tasks/ids";
+    public static final String WHEELTASK_BY_ID = LOCALHOST +"/tasks/id";
+    public static final String SAVE_UPDATE_WHEELTASK = LOCALHOST +"/tasks";
+    public static final String WHEELS_BY_USER_ID = LOCALHOST +"/wheels/userId";
+    public static final String SAVE_UPDATE_WHEEL = LOCALHOST +"/wheels";
 
 }

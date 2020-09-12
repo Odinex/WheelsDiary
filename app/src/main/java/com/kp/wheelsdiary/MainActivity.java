@@ -42,6 +42,7 @@ import com.kp.wheelsdiary.ui.login.LoginActivity;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -76,7 +77,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setupNavigationView();
         setupToolbar();
-        setupTablayout();
+        try {
+            setupTablayout();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         setupCollapsingToolbarLayout();
         setupFab();
         Intent loginIntent = new Intent(this, LoginActivity.class);
@@ -127,48 +134,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == LOGIN_RESULT) {
-            if (resultCode == Activity.RESULT_OK) {
-                String result = data.getStringExtra("result");
+        try {
+            if (requestCode == LOGIN_RESULT) {
+                if (resultCode == Activity.RESULT_OK) {
+                    String result = data.getStringExtra("result");
 //                View viewById = findViewById(R.id);
 //                TextView greeting = (TextView) viewById;
 //                greeting.setText(String.format("Hello %s", result));
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                // Not logged in
-            }
-        } else if (requestCode == ADD_WHEEL_RESULT) {
-            if (resultCode == Activity.RESULT_OK) {
-                String tabName = data.getStringExtra("name");
-                tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-                final TabLayout.Tab tab = tabLayout.newTab().setText(tabName);
+                }
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    // Not logged in
+                }
+            } else if (requestCode == ADD_WHEEL_RESULT) {
+                if (resultCode == Activity.RESULT_OK) {
+                    String tabName = data.getStringExtra("name");
+                    tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+                    final TabLayout.Tab tab = tabLayout.newTab().setText(tabName);
 
-                tabLayout.addTab(tab);
-                Snackbar openNewTab = Snackbar
-                        .make(findViewById(R.id.coordinatorLayout), "Open the new tab '" + tabName + "'", Snackbar.LENGTH_LONG);
+                    tabLayout.addTab(tab);
+                    Snackbar openNewTab = Snackbar
+                            .make(findViewById(R.id.coordinatorLayout), "Open the new tab '" + tabName + "'", Snackbar.LENGTH_LONG);
 
-                openNewTab.setAction("Open", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        tab.select();
-                        // TODO refresh data for the car
-                    }
-                }).show(); // Don’t forget to show!
+                    openNewTab.setAction("Open", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            tab.select();
+                            // TODO refresh data for the car
+                        }
+                    }).show(); // Don’t forget to show!
+                }
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    // Not logged in
+                }
+            } else if (requestCode == ADD_TASK_RESULT || requestCode == EDIT_TASK_INTENT) {
+                if (resultCode == Activity.RESULT_OK) {
+                    String tabName = tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getText().toString();
+                    reloadTasks(tabName);
+                }
+            } else if (requestCode == WHEELS_RESULT) {
+                if (resultCode == Activity.RESULT_OK) {
+                    tabLayout.removeAllTabs();
+                    addTabsAndSelectCombinedTab();
+                    reloadTasks(ALL);
+                }
             }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                // Not logged in
-            }
-        } else if (requestCode == ADD_TASK_RESULT || requestCode == EDIT_TASK_INTENT) {
-            if (resultCode == Activity.RESULT_OK) {
-                String tabName = tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getText().toString();
-                reloadTasks(tabName);
-            }
-        } else if(requestCode == WHEELS_RESULT) {
-            if (resultCode == Activity.RESULT_OK) {
-                tabLayout.removeAllTabs();
-                addTabsAndSelectCombinedTab();
-                reloadTasks(ALL);
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -219,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void setupTablayout() {
+    private void setupTablayout() throws ExecutionException, InterruptedException {
 
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
 
@@ -236,7 +247,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String tabName = tab.getText().toString();
                 System.out.println(tabName + "tabName");
 
-                reloadTasks(tabName);
+                try {
+                    reloadTasks(tabName);
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 String title = ("Wheel Diary of " + tabName);
                 System.out.println("Title: " + title);
                 toolbar.setTitle(title);
@@ -260,14 +277,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void addTabsAndSelectCombinedTab() {
+    private void addTabsAndSelectCombinedTab() throws ExecutionException, InterruptedException {
         TabLayout.Tab all = tabLayout.newTab().setText(ALL);
         tabLayout.addTab(all);
         addTabs(tabLayout);
         all.select();
     }
 
-    private List<WheelTask> getTasks(String tabName) {
+    private List<WheelTask> getTasks(String tabName) throws ExecutionException, InterruptedException {
         List<WheelTask> wheelTasks;
         if (tabName.equals(ALL)) {
             wheelTasks = WheelTaskService.getWheelTasks();
@@ -277,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return wheelTasks;
     }
 
-    private void addTabs(TabLayout tabLayout) {
+    private void addTabs(TabLayout tabLayout) throws ExecutionException, InterruptedException {
         for (Wheel wheel : WheelService.getWheels()) {
             TabLayout.Tab tab = tabLayout.newTab().setText(wheel.getName());
             tabLayout.addTab(tab);
@@ -318,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab.animate().rotation(0);
     }
 
-    private void reloadTasks(String tabName) {
+    private void reloadTasks(String tabName) throws ExecutionException, InterruptedException {
         LinearLayout cardLayout = findViewById(R.id.cardLinearLayout);
         cardLayout.removeAllViews();
         List<WheelTask> wheelTasks = getTasks(tabName);

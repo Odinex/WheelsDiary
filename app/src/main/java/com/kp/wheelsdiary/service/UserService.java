@@ -1,11 +1,19 @@
 package com.kp.wheelsdiary.service;
 
+import android.os.AsyncTask;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
 import com.kp.wheelsdiary.http.UserHttpClient;
 import com.kp.wheelsdiary.data.Result;
 import com.kp.wheelsdiary.data.model.User;
 import com.kp.wheelsdiary.tasks.UserLoginTask;
 import com.kp.wheelsdiary.tasks.UserRegisterTask;
+
+import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
 
@@ -53,29 +61,52 @@ public class UserService {
         // @see https://developer.android.com/training/articles/keystore
     }
 
-    public Result.Success<User> login(String username, String password) throws ExecutionException, InterruptedException {
+    public Result login(String username, String password) throws ExecutionException, InterruptedException {
 // Request a string response from the provided URL.
         WheelService.setCurrentUser(null);
         System.out.println(username+password) ;
         userLoginTask = new UserLoginTask(username,password,httpClient);
-        String s = userLoginTask.execute().get();
-        System.out.println("Login result " + s);
-        while(WheelService.getCurrentUser() == null) {
-             try {
-                 Thread.sleep(2000);
-             } catch (InterruptedException e) {
-                 e.printStackTrace();
-             }
-         }
-        return new Result.Success<>(WheelService.getCurrentUser());
+        AsyncTask<Void, Void, String> execute = userLoginTask.execute();
+        while(execute.getStatus() != AsyncTask.Status.FINISHED) {
+            Thread.sleep(2000);
+        }
+
+        User currentUser = WheelService.getCurrentUser();
+        if(currentUser == null || currentUser.getId() == null) {
+            return new Result.Error(new Exception("Unsuccessful login"));
+        }
+        return new Result.Success<>(currentUser);
     }
 
-    public Result<User> register(final String username, final String password) throws ExecutionException, InterruptedException {
+    public Result register(final String username, final String password) throws ExecutionException, InterruptedException {
         WheelService.setCurrentUser(null);
         System.out.println(username+password) ;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        textView.setText("Response: " + response.toString());
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+
+                    }
+                });
         userRegisterTask = new UserRegisterTask(username,password,httpClient);
-        String s = userRegisterTask.execute().get();
-        System.out.println("register result " + s);
-        return new Result.Success<>(WheelService.getCurrentUser());
+        AsyncTask<Void, Void, String> execute = userRegisterTask.execute();
+        while(execute.getStatus() != AsyncTask.Status.FINISHED) {
+            Thread.sleep(2000);
+            System.out.println("Waiting "+execute.getStatus().name());
+        }
+        System.out.println("register result ");
+        User currentUser = WheelService.getCurrentUser();
+        if(currentUser == null || currentUser.getId() == null) {
+            return new Result.Error(new Exception("Unsuccessful login"));
+        }
+        return new Result.Success<>(currentUser);
     }
 }

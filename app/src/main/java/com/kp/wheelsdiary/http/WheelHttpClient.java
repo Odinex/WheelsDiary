@@ -37,7 +37,7 @@ public class WheelHttpClient {
     }
 
     public String saveWheel(Wheel wheel) {
-        String url = Constants.SAVE_UPDATE_WHEELTASK;
+        String url = Constants.SAVE_UPDATE_WHEEL;
         RequestBody body = RequestBody.create(gson.toJson(wheel), JSON);
         Request request = new Request.Builder().url(url).post(body).build();
         System.out.println(request.toString());
@@ -52,7 +52,7 @@ public class WheelHttpClient {
     }
 
     public String updateWheel(Wheel wheel) {
-        String url = Constants.SAVE_UPDATE_WHEELTASK;
+        String url = Constants.SAVE_UPDATE_WHEEL;
         RequestBody body = RequestBody.create(gson.toJson(wheel), JSON);
         Request request = new Request.Builder().url(url).put(body).build();
         System.out.println(request.toString());
