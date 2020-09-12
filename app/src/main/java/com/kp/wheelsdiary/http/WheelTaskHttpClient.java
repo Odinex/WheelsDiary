@@ -1,6 +1,7 @@
 package com.kp.wheelsdiary.http;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.kp.wheelsdiary.data.Result;
 import com.kp.wheelsdiary.data.model.User;
 import com.kp.wheelsdiary.dto.WheelTask;
@@ -25,7 +26,8 @@ public class WheelTaskHttpClient {
     public static final MediaType JSON
             = MediaType.get("application/json; charset=utf-8");
 
-    Gson gson = new Gson();
+    Gson gson = new GsonBuilder()
+   .setDateFormat("yyyy-MM-dd").create();
     OkHttpClient client = new OkHttpClient();
 
       public String getWheelTasksByUserId(String userId) {
@@ -35,6 +37,7 @@ public class WheelTaskHttpClient {
         Call call = client.newCall(request);
         try (Response response = call.execute()) {
             String responseString = response.body().string();
+            // TODO check response code and add condition
             return responseString;
         }catch (Exception e) {
             e.printStackTrace();
@@ -49,8 +52,11 @@ public class WheelTaskHttpClient {
         System.out.println(request.toString());
         Call call = client.newCall(request);
         try (Response response = call.execute()) {
-            String responseString = response.body().string();
-            return  responseString;
+            if(response.code() ==  200) {
+                return "OK";
+            } else {
+                return "ERROR";
+            }
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,8 +70,11 @@ public class WheelTaskHttpClient {
         System.out.println(request.toString());
         Call call = client.newCall(request);
         try (Response response = call.execute()) {
-            String responseString = response.body().string();
-            return  responseString;
+            if(response.code() ==  200) {
+                return "OK";
+            } else {
+                return "ERROR";
+            }
         }catch (Exception e) {
             e.printStackTrace();
         }

@@ -204,7 +204,7 @@ public class WheelActivity extends AppCompatActivity {
         if (brandSpinner.getSelectedItemId() > 0 && modelSpinner.getSelectedItemId() > 0 && nameEditText.getText() != null
                 && !nameEditText.getText().toString().equals("")) {
             Intent returnIntent = new Intent();
-            Wheel wheel = new Wheel((String) brandSpinner.getSelectedItem(), (String) modelSpinner.getSelectedItem(),
+            Wheel wheel = new Wheel(null, (String) brandSpinner.getSelectedItem(), (String) modelSpinner.getSelectedItem(),
                     nameEditText.getText().toString(), variantInput.getText().toString());
             WheelService.saveWheel(wheel);
             returnIntent.putExtra("name", nameEditText.getText().toString());

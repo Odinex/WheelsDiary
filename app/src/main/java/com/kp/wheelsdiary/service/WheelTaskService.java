@@ -81,8 +81,15 @@ public class WheelTaskService {
         return instance.getTime();
     }
 
-    public static void saveTask(WheelTask wheelTask) {
+    public static void saveTask(WheelTask wheelTask) throws Exception {
+        WheelTasksAsyncTask save = new WheelTasksAsyncTask(WheelTaskRequests.SAVE,wheelTask,new WheelTaskHttpClient());
+        String s = save.execute().get();
+        if(s.equals("ERROR")) {
+            throw new Exception("Save task failed");
+        }
         wheelTasks.add(wheelTask);
+
+
     }
 
     public static List<WheelTask> getTasksForWheel(final String wheelName) throws ExecutionException, InterruptedException {

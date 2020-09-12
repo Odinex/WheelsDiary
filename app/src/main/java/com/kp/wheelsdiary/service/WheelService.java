@@ -30,7 +30,7 @@ public class WheelService {
         String s = task.execute().get();
         Wheel[] wheelArray = gson.fromJson(s, Wheel[].class);
         for(Wheel w : wheelArray) {
-            saveWheel(w);
+            wheels.put(w.getName(),w);
         }
 
 //        if(wheels.isEmpty()) {

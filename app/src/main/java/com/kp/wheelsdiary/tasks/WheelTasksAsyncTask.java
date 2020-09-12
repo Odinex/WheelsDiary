@@ -8,6 +8,7 @@ import com.kp.wheelsdiary.enums.WheelTaskRequests;
 import com.kp.wheelsdiary.http.WheelTaskHttpClient;
 
 public class WheelTasksAsyncTask extends AsyncTask<Void, Void, String> {
+    private WheelTask wheelTask;
     WheelTaskRequests request;
     Long userId;
     Long wheelId;
@@ -16,9 +17,9 @@ public class WheelTasksAsyncTask extends AsyncTask<Void, Void, String> {
 
     public WheelTasksAsyncTask(WheelTaskRequests request, Long id, WheelTaskHttpClient wheelTaskHttpClient) {
         this.request = request;
-        if(request == WheelTaskRequests.BY_ID) {
-           this.wheelTaskId = id;
-        } else if(request == WheelTaskRequests.BY_USER_ID){
+        if (request == WheelTaskRequests.BY_ID) {
+            this.wheelTaskId = id;
+        } else if (request == WheelTaskRequests.BY_USER_ID) {
             this.userId = id;
         }
         this.wheelTaskHttpClient = wheelTaskHttpClient;
@@ -31,15 +32,24 @@ public class WheelTasksAsyncTask extends AsyncTask<Void, Void, String> {
         this.wheelTaskHttpClient = wheelTaskHttpClient;
     }
 
+    public WheelTasksAsyncTask(WheelTaskRequests save, WheelTask wheelTask, WheelTaskHttpClient wheelTaskHttpClient) {
+        this.request = save;
+        this.wheelTask = wheelTask;
+        this.wheelTaskHttpClient = wheelTaskHttpClient;
+    }
+
     @Override
     protected String doInBackground(Void... voids) {
-        if(request == WheelTaskRequests.BY_USER_ID) {
+        if (request == WheelTaskRequests.BY_USER_ID) {
             return wheelTaskHttpClient.getWheelTasksByUserId(userId.toString());
 
 
-        } else if(request == WheelTaskRequests.BY_USER_ID_AND_WHEEL_ID) {
+        } else if (request == WheelTaskRequests.BY_USER_ID_AND_WHEEL_ID) {
             return wheelTaskHttpClient.getWheelTasksByUserIdAndWheelId(userId.toString(), wheelId.toString());
+        } else if (request == WheelTaskRequests.SAVE) {
+            return wheelTaskHttpClient.saveWheelTask(wheelTask);
         }
+
         return null;
     }
 

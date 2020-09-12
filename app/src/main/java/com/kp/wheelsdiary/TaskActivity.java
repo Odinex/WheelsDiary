@@ -145,7 +145,11 @@ public class TaskActivity extends AppCompatActivity {
                                 wheelTask = new WheelTask(dateScheduled, taskType, otherTaskType,
                                         details, wheelByName, WheelTaskService.getNextId());
                             }
-                            WheelTaskService.saveTask(wheelTask);
+                            try {
+                                WheelTaskService.saveTask(wheelTask);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         } else {
                             currentWheelTask.setDateScheduled(dateScheduled);
                             currentWheelTask.setTaskType(taskType);
