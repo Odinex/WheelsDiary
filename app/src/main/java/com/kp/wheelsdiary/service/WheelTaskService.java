@@ -1,11 +1,17 @@
 package com.kp.wheelsdiary.service;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.kp.wheelsdiary.dto.WheelTask;
 import com.kp.wheelsdiary.enums.WheelTaskRequests;
 import com.kp.wheelsdiary.http.WheelTaskHttpClient;
 import com.kp.wheelsdiary.tasks.WheelTasksAsyncTask;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -17,14 +23,18 @@ public class WheelTaskService {
     private static List<WheelTask> wheelTasks = new ArrayList<>();
 
     private static int nextId = 1;
-    static Gson gson = new Gson();
+    // Creates the json object which will manage the information received
+
 
     public static int getNextId() {
         return nextId++;
     }
+
     public static List<WheelTask> getWheelTasks() throws ExecutionException, InterruptedException {
         // Instantiate the RequestQueue.
-        getWheelTasksByUserId();
+        if(wheelTasks.isEmpty()) {
+            getWheelTasksByUserId();
+        }
 
 //        if(WheelTaskService.wheelTasks.isEmpty()) {
 //            for(Wheel wheel : WheelService.getWheels()) {
@@ -44,10 +54,22 @@ public class WheelTaskService {
     }
 
     private static void getWheelTasksByUserId() throws ExecutionException, InterruptedException {
-        if(WheelService.getCurrentUser() != null) {
+        GsonBuilder builder = new GsonBuilder();
+
+        // Register an adapter to manage the date types as long values
+        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws
+                    JsonParseException {
+                return new Date(json.getAsJsonPrimitive().getAsLong());
+            }
+        });
+
+        Gson gson = builder.create();
+        if (WheelService.getCurrentUser() != null) {
             WheelTasksAsyncTask wheelTasksAsyncTask = new WheelTasksAsyncTask(WheelTaskRequests.BY_USER_ID,
                     WheelService.getCurrentUser().getId(), new WheelTaskHttpClient());
-            WheelTask[] wheelTaskArray = gson.fromJson(wheelTasksAsyncTask.execute().get(), WheelTask[].class);
+            String json = wheelTasksAsyncTask.execute().get();
+            WheelTask[] wheelTaskArray = gson.fromJson(json, WheelTask[].class);
             wheelTasks.addAll(Arrays.asList(wheelTaskArray));
         }
     }
@@ -64,12 +86,12 @@ public class WheelTaskService {
     }
 
     public static List<WheelTask> getTasksForWheel(final String wheelName) throws ExecutionException, InterruptedException {
-        if(wheelTasks == null || wheelTasks.isEmpty()) {
+        if (wheelTasks == null || wheelTasks.isEmpty()) {
             getWheelTasksByUserId();
         }
         List<WheelTask> filtered = new ArrayList<>();
-        for(WheelTask wheelTask : wheelTasks) {
-            if(wheelTask.getWheel().getName().equals(wheelName)) {
+        for (WheelTask wheelTask : wheelTasks) {
+            if (wheelTask.getWheel().getName().equals(wheelName)) {
                 filtered.add(wheelTask);
             }
         }
@@ -78,8 +100,8 @@ public class WheelTaskService {
     }
 
     public static WheelTask getTaskById(Long taskId) throws Exception {
-        for(WheelTask current : wheelTasks) {
-            if(current.getId() == taskId) {
+        for (WheelTask current : wheelTasks) {
+            if (current.getId() == taskId) {
                 return current;
             }
         }
@@ -87,8 +109,8 @@ public class WheelTaskService {
     }
 
     public static void updateTask(WheelTask currentWheelTask) {
-        for(int i = 0; i < wheelTasks.size(); i++) {
-            if(wheelTasks.get(i).getId() == currentWheelTask.getId()) {
+        for (int i = 0; i < wheelTasks.size(); i++) {
+            if (wheelTasks.get(i).getId() == currentWheelTask.getId()) {
                 wheelTasks.set(i, currentWheelTask);
             }
         }

@@ -4,12 +4,15 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import android.content.Context;
 import android.util.Patterns;
 
+import com.kp.wheelsdiary.http.LoginCallBack;
 import com.kp.wheelsdiary.service.UserService;
 import com.kp.wheelsdiary.data.Result;
 import com.kp.wheelsdiary.data.model.User;
 import com.kp.wheelsdiary.R;
+import com.kp.wheelsdiary.service.WheelService;
 
 import java.util.concurrent.ExecutionException;
 
@@ -18,9 +21,24 @@ public class LoginViewModel extends ViewModel {
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
     private UserService userService;
+    private LoginCallBack callBack;
+    private Context context;
 
-    LoginViewModel(UserService userService) {
+    LoginViewModel(UserService userService, Context context) {
         this.userService = userService;
+        this.context = context;
+        this.callBack = new LoginCallBack() {
+            @Override
+            public void onSuccess() {
+                User data = WheelService.getCurrentUser();
+                loginResult.setValue(new LoginResult(new LoggedInUserView(data.getName())));
+            }
+
+            @Override
+            public void onFailure() {
+                loginResult.setValue(new LoginResult(R.string.login_failed));
+            }
+        };
     }
 
     LiveData<LoginFormState> getLoginFormState() {
@@ -33,14 +51,8 @@ public class LoginViewModel extends ViewModel {
 
     public void login(String username, String password) throws ExecutionException, InterruptedException {
         // can be launched in a separate asynchronous job
-        Result result = userService.login(username, password);
+        userService.login(username, password, callBack, context);
 
-        if (result instanceof Result.Success) {
-            User data = (User) ((Result.Success) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getName())));
-        } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
-        }
     }
 
     void loginDataChanged(String username, String password) {
@@ -71,13 +83,8 @@ public class LoginViewModel extends ViewModel {
     }
 
     void register(String username, String password) throws ExecutionException, InterruptedException {
-        Result result = userService.register(username, password);
 
-        if (result instanceof Result.Success) {
-            User data = (User) ((Result.Success) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getName())));
-        } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
-        }
+        userService.register(username, password, context, callBack);
+
     }
 }

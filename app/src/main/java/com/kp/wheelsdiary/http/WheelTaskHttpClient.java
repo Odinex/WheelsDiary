@@ -29,7 +29,7 @@ public class WheelTaskHttpClient {
     OkHttpClient client = new OkHttpClient();
 
       public String getWheelTasksByUserId(String userId) {
-        String url = Constants.WHEELS_BY_USER_ID;
+        String url = Constants.WHEELTASKS_BY_USER_ID;
         Request request = new Request.Builder().addHeader("userId",userId).url(url).build();
         System.out.println(request.toString());
         Call call = client.newCall(request);

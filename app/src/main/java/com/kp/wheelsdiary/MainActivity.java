@@ -75,60 +75,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //set content view AFTER ABOVE sequence (to avoid crash)
         this.setContentView(R.layout.activity_main);
 
-        setupNavigationView();
-        setupToolbar();
-        try {
-            setupTablayout();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        setupCollapsingToolbarLayout();
-        setupFab();
+
         Intent loginIntent = new Intent(this, LoginActivity.class);
         startActivityForResult(loginIntent, LOGIN_RESULT);
-        wheelsFab = (FloatingActionButton) findViewById(R.id.wheelsFab);
-        addTaskFab = (FloatingActionButton) findViewById(R.id.addTaskFab);
-        addWheelFab = (FloatingActionButton) findViewById(R.id.addWheelFab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!isFABOpen) {
-                    showFABMenu();
-                } else {
-                    closeFABMenu();
-                }
-            }
-        });
 
-        addTaskFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent addTaskIntent = new Intent(view.getContext(), TaskActivity.class);
-                addTaskIntent.putExtra("TAB_NAME", tabLayout.getTabAt(tabLayout.getSelectedTabPosition())
-                        .getText().toString());
-                addTaskIntent.putExtra("MODE", "ADD");
-                startActivityForResult(addTaskIntent, ADD_TASK_RESULT);
-            }
-        });
-
-        addWheelFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent addWheelIntent = new Intent(view.getContext(), WheelActivity.class);
-                startActivityForResult(addWheelIntent, ADD_WHEEL_RESULT);
-            }
-        });
-
-        wheelsFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent wheelsIntent = new Intent(view.getContext(), WheelsActivity.class);
-                startActivityForResult(wheelsIntent, WHEELS_RESULT);
-            }
-        });
-        Objects.requireNonNull(tabLayout.getTabAt(0)).select();
     }
 
     @Override
@@ -137,10 +87,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try {
             if (requestCode == LOGIN_RESULT) {
                 if (resultCode == Activity.RESULT_OK) {
+                    setupNavigationView();
+                    setupToolbar();
+                    try {
+                        setupTablayout();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    setupCollapsingToolbarLayout();
+                    setupFab();
                     String result = data.getStringExtra("result");
-//                View viewById = findViewById(R.id);
-//                TextView greeting = (TextView) viewById;
-//                greeting.setText(String.format("Hello %s", result));
+                    wheelsFab = (FloatingActionButton) findViewById(R.id.wheelsFab);
+                    addTaskFab = (FloatingActionButton) findViewById(R.id.addTaskFab);
+                    addWheelFab = (FloatingActionButton) findViewById(R.id.addWheelFab);
+                    fab.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (!isFABOpen) {
+                                showFABMenu();
+                            } else {
+                                closeFABMenu();
+                            }
+                        }
+                    });
+
+                    addTaskFab.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent addTaskIntent = new Intent(view.getContext(), TaskActivity.class);
+                            addTaskIntent.putExtra("TAB_NAME", tabLayout.getTabAt(tabLayout.getSelectedTabPosition())
+                                    .getText().toString());
+                            addTaskIntent.putExtra("MODE", "ADD");
+                            startActivityForResult(addTaskIntent, ADD_TASK_RESULT);
+                        }
+                    });
+
+                    addWheelFab.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent addWheelIntent = new Intent(view.getContext(), WheelActivity.class);
+                            startActivityForResult(addWheelIntent, ADD_WHEEL_RESULT);
+                        }
+                    });
+
+                    wheelsFab.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent wheelsIntent = new Intent(view.getContext(), WheelsActivity.class);
+                            startActivityForResult(wheelsIntent, WHEELS_RESULT);
+                        }
+                    });
+                    Objects.requireNonNull(tabLayout.getTabAt(0)).select();
                 }
                 if (resultCode == Activity.RESULT_CANCELED) {
                     // Not logged in

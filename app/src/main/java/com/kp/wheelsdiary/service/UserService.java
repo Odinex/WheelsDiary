@@ -1,18 +1,18 @@
 package com.kp.wheelsdiary.service;
 
-import android.os.AsyncTask;
+import android.content.Context;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
-import com.kp.wheelsdiary.http.UserHttpClient;
-import com.kp.wheelsdiary.data.Result;
+import com.kp.wheelsdiary.http.Constants;
+import com.kp.wheelsdiary.http.LoginCallBack;
 import com.kp.wheelsdiary.data.model.User;
-import com.kp.wheelsdiary.tasks.UserLoginTask;
-import com.kp.wheelsdiary.tasks.UserRegisterTask;
+import com.kp.wheelsdiary.http.VolleySingleton;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
@@ -24,24 +24,21 @@ import java.util.concurrent.ExecutionException;
 public class UserService {
 
     private static UserService instance;
-    private UserHttpClient httpClient;
-    private UserLoginTask userLoginTask;
 
-    private UserRegisterTask userRegisterTask;
-    Gson gson=new Gson();
+    Gson gson = new Gson();
 
     // If user credentials will be cached in local storage, it is recommended it be encrypted
     // @see https://developer.android.com/training/articles/keystore
     private User user = null;
 
     // private constructor : singleton access
-    private UserService(UserHttpClient dataSource) {
-        this.httpClient = dataSource;
+    private UserService() {
+
     }
 
-    public static UserService getInstance(UserHttpClient userHttpClient) {
+    public static UserService getInstance() {
         if (instance == null) {
-            instance = new UserService(userHttpClient);
+            instance = new UserService();
         }
         return instance;
     }
@@ -52,7 +49,7 @@ public class UserService {
 
     public void logout() {
         user = null;
-        httpClient.logout();
+        // TODO
     }
 
     private void setLoggedInUser(User user) {
@@ -61,52 +58,78 @@ public class UserService {
         // @see https://developer.android.com/training/articles/keystore
     }
 
-    public Result login(String username, String password) throws ExecutionException, InterruptedException {
+    public void login(String username, String password, final LoginCallBack callBack, Context context) throws ExecutionException, InterruptedException {
 // Request a string response from the provided URL.
         WheelService.setCurrentUser(null);
-        System.out.println(username+password) ;
-        userLoginTask = new UserLoginTask(username,password,httpClient);
-        AsyncTask<Void, Void, String> execute = userLoginTask.execute();
-        while(execute.getStatus() != AsyncTask.Status.FINISHED) {
-            Thread.sleep(2000);
+        System.out.println(username + password);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("username", username);
+            jsonObject.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-
-        User currentUser = WheelService.getCurrentUser();
-        if(currentUser == null || currentUser.getId() == null) {
-            return new Result.Error(new Exception("Unsuccessful login"));
-        }
-        return new Result.Success<>(currentUser);
-    }
-
-    public Result register(final String username, final String password) throws ExecutionException, InterruptedException {
-        WheelService.setCurrentUser(null);
-        System.out.println(username+password) ;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+                (Request.Method.POST, Constants.LOGIN, jsonObject, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        textView.setText("Response: " + response.toString());
+                        System.out.println(response.toString());
+                        User user = gson.fromJson(response.toString(), User.class);
+                        if(user == null || user.getId() == null) {
+                            callBack.onFailure();
+                        } else {
+                            WheelService.setCurrentUser(user);
+                            callBack.onSuccess();
+                        }
                     }
                 }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-
+                        error.printStackTrace();
+                        callBack.onFailure();
                     }
                 });
-        userRegisterTask = new UserRegisterTask(username,password,httpClient);
-        AsyncTask<Void, Void, String> execute = userRegisterTask.execute();
-        while(execute.getStatus() != AsyncTask.Status.FINISHED) {
-            Thread.sleep(2000);
-            System.out.println("Waiting "+execute.getStatus().name());
+        VolleySingleton instance = VolleySingleton.getInstance(context);
+        instance.addToRequestQueue(jsonObjectRequest);
+    }
+
+    public void register(final String username, final String password, Context context, final LoginCallBack callBack) throws ExecutionException, InterruptedException {
+        WheelService.setCurrentUser(null);
+        System.out.println(username + password);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("username", username);
+            jsonObject.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        System.out.println("register result ");
-        User currentUser = WheelService.getCurrentUser();
-        if(currentUser == null || currentUser.getId() == null) {
-            return new Result.Error(new Exception("Unsuccessful login"));
-        }
-        return new Result.Success<>(currentUser);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.POST, Constants.REGISTER, jsonObject, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        System.out.println(response.toString());
+                        User user = gson.fromJson(response.toString(), User.class);
+                        if(user == null || user.getId() == null) {
+                            callBack.onFailure();
+                        } else {
+                            WheelService.setCurrentUser(user);
+                            callBack.onSuccess();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                        callBack.onFailure();
+                    }
+                });
+        VolleySingleton instance = VolleySingleton.getInstance(context);
+        instance.addToRequestQueue(jsonObjectRequest);
+
+
     }
 }
