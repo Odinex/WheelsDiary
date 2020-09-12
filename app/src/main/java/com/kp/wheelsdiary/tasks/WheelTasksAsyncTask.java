@@ -7,14 +7,14 @@ import com.kp.wheelsdiary.dto.WheelTask;
 import com.kp.wheelsdiary.enums.WheelTaskRequests;
 import com.kp.wheelsdiary.http.WheelTaskHttpClient;
 
-public class WheelTasksByUserAsyncTask extends AsyncTask<Void, Void, String> {
+public class WheelTasksAsyncTask extends AsyncTask<Void, Void, String> {
     WheelTaskRequests request;
     Long userId;
     Long wheelId;
     Long wheelTaskId;
     WheelTaskHttpClient wheelTaskHttpClient;
 
-    public WheelTasksByUserAsyncTask(WheelTaskRequests request, Long id,WheelTaskHttpClient wheelTaskHttpClient) {
+    public WheelTasksAsyncTask(WheelTaskRequests request, Long id, WheelTaskHttpClient wheelTaskHttpClient) {
         this.request = request;
         if(request == WheelTaskRequests.BY_ID) {
            this.wheelTaskId = id;
@@ -24,7 +24,7 @@ public class WheelTasksByUserAsyncTask extends AsyncTask<Void, Void, String> {
         this.wheelTaskHttpClient = wheelTaskHttpClient;
     }
 
-    public WheelTasksByUserAsyncTask(WheelTaskRequests request, Long userId, Long wheelId, WheelTaskHttpClient wheelTaskHttpClient) {
+    public WheelTasksAsyncTask(WheelTaskRequests request, Long userId, Long wheelId, WheelTaskHttpClient wheelTaskHttpClient) {
         this.request = request;
         this.userId = userId;
         this.wheelId = wheelId;

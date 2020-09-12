@@ -59,7 +59,7 @@ public class UserHttpClient {
     public Result login(String username, String password) {
 
         try {
-            User post = post(username, password, "http://10.0.2.2:8080/public/users/login");
+            User post = post(username, password, Constants.LOGIN);
             System.out.println(post);
 
 
@@ -72,7 +72,7 @@ public class UserHttpClient {
 
     public Result register(String username, String password) throws IOException {
         try {
-            User post = post(username, password, "http://10.0.2.2:8080/public/users/register");
+            User post = post(username, password, Constants.REGISTER);
             System.out.println(post);
 
             return new Result.Success<>(post);

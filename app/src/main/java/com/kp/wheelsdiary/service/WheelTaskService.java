@@ -2,11 +2,9 @@ package com.kp.wheelsdiary.service;
 
 import com.google.gson.Gson;
 import com.kp.wheelsdiary.dto.WheelTask;
-import com.kp.wheelsdiary.dto.Wheel;
-import com.kp.wheelsdiary.enums.TaskTypeEnum;
 import com.kp.wheelsdiary.enums.WheelTaskRequests;
 import com.kp.wheelsdiary.http.WheelTaskHttpClient;
-import com.kp.wheelsdiary.tasks.WheelTasksByUserAsyncTask;
+import com.kp.wheelsdiary.tasks.WheelTasksAsyncTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,9 +24,9 @@ public class WheelTaskService {
     }
     public static List<WheelTask> getWheelTasks() throws ExecutionException, InterruptedException {
         // Instantiate the RequestQueue.
-        WheelTasksByUserAsyncTask wheelTasksByUserAsyncTask = new WheelTasksByUserAsyncTask(WheelTaskRequests.BY_USER_ID,
+        WheelTasksAsyncTask wheelTasksAsyncTask = new WheelTasksAsyncTask(WheelTaskRequests.BY_USER_ID,
                 WheelService.getCurrentUser().getId(), new WheelTaskHttpClient());
-        WheelTask[] wheelTaskArray = gson.fromJson(wheelTasksByUserAsyncTask.execute().get(), WheelTask[].class);
+        WheelTask[] wheelTaskArray = gson.fromJson(wheelTasksAsyncTask.execute().get(), WheelTask[].class);
         wheelTasks.addAll(Arrays.asList(wheelTaskArray));
 
 //        if(WheelTaskService.wheelTasks.isEmpty()) {
