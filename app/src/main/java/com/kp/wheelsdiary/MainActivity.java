@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 if (resultCode == Activity.RESULT_CANCELED) {
                     Snackbar openNewTab = Snackbar
-                            .make(findViewById(R.id.coordinatorLayout), "Adding task failed!", Snackbar.LENGTH_LONG);
+                            .make(findViewById(R.id.coordinatorLayout), "Adding/Editting task failed!", Snackbar.LENGTH_LONG);
                     openNewTab.setAction("OK", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

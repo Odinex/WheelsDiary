@@ -306,6 +306,9 @@ public class WheelActivity extends AppCompatActivity {
                     setResult(Activity.RESULT_CANCELED, returnIntent);
                     finish();
                 }
+                returnIntent.putExtra("name", name);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
             }
 
         } else {

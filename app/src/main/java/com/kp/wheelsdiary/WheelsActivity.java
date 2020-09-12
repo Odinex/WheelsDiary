@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -22,15 +23,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.snackbar.Snackbar;
 import com.kp.wheelsdiary.dto.Wheel;
-import com.kp.wheelsdiary.dto.WheelTask;
-import com.kp.wheelsdiary.enums.TaskTypeEnum;
 import com.kp.wheelsdiary.service.WheelService;
-import com.kp.wheelsdiary.service.WheelTaskService;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class WheelsActivity extends AppCompatActivity {
@@ -52,7 +50,7 @@ public class WheelsActivity extends AppCompatActivity {
         setupToolbar();
         setupCollapsingToolbarLayout();
         try {
-            loadCards();
+            reloadCars();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -85,7 +83,7 @@ public class WheelsActivity extends AppCompatActivity {
         }
     }
 
-    private void loadCards() throws ExecutionException, InterruptedException {
+    private void reloadCars() throws ExecutionException, InterruptedException {
         LinearLayout cardLayout = findViewById(R.id.wheelsCardLinearLayout);
         cardLayout.removeAllViews();
         WheelService.clearWheels();
@@ -169,6 +167,36 @@ public class WheelsActivity extends AppCompatActivity {
             cardView.addView(textAndButtonLayout);
             cardLayout.addView(cardView);
 
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            if (requestCode == EDIT_WHEEL_INTENT) {
+                if (resultCode == Activity.RESULT_OK) {
+                    String carname = data.getStringExtra("name");
+                    reloadCars();
+                    Snackbar openNewTab = Snackbar
+                            .make(findViewById(R.id.coordinatorLayout), "Edit of car " + carname + " was successful", Snackbar.LENGTH_LONG);
+                    openNewTab.setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    }).show();
+                }
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                Snackbar openNewTab = Snackbar
+                        .make(findViewById(R.id.coordinatorLayout), "Editting car failed!", Snackbar.LENGTH_LONG);
+                openNewTab.setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                    }
+                }).show();
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
