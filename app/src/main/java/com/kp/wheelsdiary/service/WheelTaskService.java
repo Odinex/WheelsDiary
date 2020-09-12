@@ -86,12 +86,10 @@ public class WheelTaskService {
         String s = save.execute().get();
         if(s.equals("ERROR")) {
             throw new Exception("Save task failed");
+        } else {
+            wheelTasks.add(wheelTask);
         }
-        wheelTasks.add(wheelTask);
-
-
     }
-
     public static List<WheelTask> getTasksForWheel(final String wheelName) throws ExecutionException, InterruptedException {
         if (wheelTasks == null || wheelTasks.isEmpty()) {
             getWheelTasksByUserId();
@@ -121,5 +119,9 @@ public class WheelTaskService {
                 wheelTasks.set(i, currentWheelTask);
             }
         }
+    }
+
+    public static synchronized void clearTasks() {
+        wheelTasks.clear();
     }
 }

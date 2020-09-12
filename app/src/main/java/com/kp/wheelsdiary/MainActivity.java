@@ -147,28 +147,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else if (requestCode == ADD_WHEEL_RESULT) {
                 if (resultCode == Activity.RESULT_OK) {
                     String tabName = data.getStringExtra("name");
-                    tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-                    final TabLayout.Tab tab = tabLayout.newTab().setText(tabName);
-
-                    tabLayout.addTab(tab);
+                    tabLayout.removeAllTabs();
+                    WheelService.clearWheels();
+                    addTabsAndSelectCombinedTab();
+                    reloadTasks(ALL);
                     Snackbar openNewTab = Snackbar
-                            .make(findViewById(R.id.coordinatorLayout), "Open the new tab '" + tabName + "'", Snackbar.LENGTH_LONG);
+                            .make(findViewById(R.id.coordinatorLayout), "New tab added: '" + tabName + "'", Snackbar.LENGTH_LONG);
 
-                    openNewTab.setAction("Open", new View.OnClickListener() {
+                    openNewTab.setAction("OK", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            tab.select();
                             // TODO refresh data for the car
                         }
                     }).show(); // Don’t forget to show!
                 }
                 if (resultCode == Activity.RESULT_CANCELED) {
-                    // Not logged in
+                    Snackbar openNewTab = Snackbar
+                            .make(findViewById(R.id.coordinatorLayout), "Adding car failed!", Snackbar.LENGTH_LONG);
+                    openNewTab.setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    }).show();
                 }
+
+
             } else if (requestCode == ADD_TASK_RESULT || requestCode == EDIT_TASK_INTENT) {
                 if (resultCode == Activity.RESULT_OK) {
                     String tabName = tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getText().toString();
                     reloadTasks(tabName);
+                }
+
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    Snackbar openNewTab = Snackbar
+                            .make(findViewById(R.id.coordinatorLayout), "Adding task failed!", Snackbar.LENGTH_LONG);
+                    openNewTab.setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    }).show();
                 }
             } else if (requestCode == WHEELS_RESULT) {
                 if (resultCode == Activity.RESULT_OK) {
@@ -337,6 +354,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void reloadTasks(String tabName) throws ExecutionException, InterruptedException {
         LinearLayout cardLayout = findViewById(R.id.cardLinearLayout);
         cardLayout.removeAllViews();
+        WheelTaskService.clearTasks();
         List<WheelTask> wheelTasks = getTasks(tabName);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();

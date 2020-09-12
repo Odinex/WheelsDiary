@@ -5,6 +5,8 @@ import com.kp.wheelsdiary.data.model.User;
 import com.kp.wheelsdiary.dto.Wheel;
 import com.kp.wheelsdiary.enums.WheelTaskRequests;
 import com.kp.wheelsdiary.http.WheelHttpClient;
+import com.kp.wheelsdiary.http.WheelTaskHttpClient;
+import com.kp.wheelsdiary.tasks.WheelTasksAsyncTask;
 import com.kp.wheelsdiary.tasks.WheelsAsyncTask;
 
 import java.util.Collection;
@@ -30,6 +32,7 @@ public class WheelService {
         String s = task.execute().get();
         Wheel[] wheelArray = gson.fromJson(s, Wheel[].class);
         for(Wheel w : wheelArray) {
+
             wheels.put(w.getName(),w);
         }
 
@@ -65,8 +68,14 @@ public class WheelService {
     }
 
 
-    public static void saveWheel(Wheel wheel) {
-        wheels.put(wheel.getName(),wheel);
+    public static void saveWheel(Wheel wheel) throws Exception {
+        WheelsAsyncTask save = new WheelsAsyncTask(WheelTaskRequests.SAVE,wheel,new WheelHttpClient());
+        String s = save.execute().get();
+        if(s.equals("ERROR")) {
+            throw new Exception("Save task failed");
+        } else {
+            wheels.put(wheel.getName(), wheel);
+        }
     }
 
     public static Wheel getWheelByName(String tabName) {
@@ -90,4 +99,7 @@ public class WheelService {
         }
     }
 
+    public static synchronized void clearWheels() {
+        wheels.clear();
+    }
 }

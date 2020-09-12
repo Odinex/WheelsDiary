@@ -43,8 +43,11 @@ public class WheelHttpClient {
         System.out.println(request.toString());
         Call call = client.newCall(request);
         try (Response response = call.execute()) {
-            String responseString = response.body().string();
-            return  responseString;
+            if(response.code() ==  200) {
+                return "OK";
+            } else {
+                return "ERROR";
+            }
         }catch (Exception e) {
             e.printStackTrace();
         }

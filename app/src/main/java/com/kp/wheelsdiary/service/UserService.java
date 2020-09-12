@@ -7,6 +7,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
+import com.kp.wheelsdiary.R;
 import com.kp.wheelsdiary.http.Constants;
 import com.kp.wheelsdiary.http.LoginCallBack;
 import com.kp.wheelsdiary.data.model.User;
@@ -77,7 +78,7 @@ public class UserService {
                         System.out.println(response.toString());
                         User user = gson.fromJson(response.toString(), User.class);
                         if(user == null || user.getId() == null) {
-                            callBack.onFailure();
+                            callBack.onFailure(R.string.login_failed);
                         } else {
                             WheelService.setCurrentUser(user);
                             callBack.onSuccess();
@@ -88,7 +89,7 @@ public class UserService {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
-                        callBack.onFailure();
+                        callBack.onFailure( R.string.login_failed);
                     }
                 });
         VolleySingleton instance = VolleySingleton.getInstance(context);
@@ -113,7 +114,7 @@ public class UserService {
                         System.out.println(response.toString());
                         User user = gson.fromJson(response.toString(), User.class);
                         if(user == null || user.getId() == null) {
-                            callBack.onFailure();
+                            callBack.onFailure( R.string.register_failed);
                         } else {
                             WheelService.setCurrentUser(user);
                             callBack.onSuccess();
@@ -124,7 +125,7 @@ public class UserService {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
-                        callBack.onFailure();
+                        callBack.onFailure(R.string.register_failed);
                     }
                 });
         VolleySingleton instance = VolleySingleton.getInstance(context);

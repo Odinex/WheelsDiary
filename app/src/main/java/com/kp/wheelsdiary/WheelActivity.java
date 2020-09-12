@@ -205,8 +205,14 @@ public class WheelActivity extends AppCompatActivity {
                 && !nameEditText.getText().toString().equals("")) {
             Intent returnIntent = new Intent();
             Wheel wheel = new Wheel(null, (String) brandSpinner.getSelectedItem(), (String) modelSpinner.getSelectedItem(),
-                    nameEditText.getText().toString(), variantInput.getText().toString());
-            WheelService.saveWheel(wheel);
+                    nameEditText.getText().toString(), variantInput.getText().toString(), WheelService.getCurrentUser());
+            try {
+                WheelService.saveWheel(wheel);
+            } catch (Exception e) {
+                e.printStackTrace();
+                setResult(Activity.RESULT_CANCELED, returnIntent);
+                finish();
+            }
             returnIntent.putExtra("name", nameEditText.getText().toString());
             setResult(Activity.RESULT_OK, returnIntent);
             finish();

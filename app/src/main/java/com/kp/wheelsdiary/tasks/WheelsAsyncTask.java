@@ -2,11 +2,13 @@ package com.kp.wheelsdiary.tasks;
 
 import android.os.AsyncTask;
 
+import com.kp.wheelsdiary.dto.Wheel;
 import com.kp.wheelsdiary.enums.WheelTaskRequests;
 import com.kp.wheelsdiary.http.WheelHttpClient;
 import com.kp.wheelsdiary.http.WheelTaskHttpClient;
 
 public class WheelsAsyncTask extends AsyncTask<Void, Void, String> {
+    private Wheel wheel;
     WheelTaskRequests request;
     Long userId;
     Long wheelId;
@@ -22,6 +24,11 @@ public class WheelsAsyncTask extends AsyncTask<Void, Void, String> {
         this.httpClient = httpClient;
     }
 
+    public WheelsAsyncTask(WheelTaskRequests save, Wheel wheel, WheelHttpClient httpClient) {
+        this.request = save;
+        this.wheel = wheel;
+        this.httpClient = httpClient;
+    }
 
 
     @Override
@@ -33,6 +40,8 @@ public class WheelsAsyncTask extends AsyncTask<Void, Void, String> {
 
         } else if(request == WheelTaskRequests.BY_ID) {
             //return httpClient.ge(userId.toString(), wheelId.toString());
+        } else if (request == WheelTaskRequests.SAVE) {
+            return httpClient.saveWheel(wheel);
         }
         return null;
     }

@@ -149,6 +149,9 @@ public class TaskActivity extends AppCompatActivity {
                                 WheelTaskService.saveTask(wheelTask);
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                Intent returnIntent = new Intent();
+                                setResult(Activity.RESULT_CANCELED, returnIntent);
+                                finish();
                             }
                         } else {
                             currentWheelTask.setDateScheduled(dateScheduled);
