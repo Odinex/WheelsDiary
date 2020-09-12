@@ -113,12 +113,19 @@ public class WheelTaskService {
         throw new Exception("Task not found for id " + taskId);
     }
 
-    public static void updateTask(WheelTask currentWheelTask) {
-        for (int i = 0; i < wheelTasks.size(); i++) {
-            if (wheelTasks.get(i).getId() == currentWheelTask.getId()) {
-                wheelTasks.set(i, currentWheelTask);
+    public static void updateTask(WheelTask currentWheelTask) throws Exception {
+        WheelTasksAsyncTask save = new WheelTasksAsyncTask(WheelTaskRequests.UPDATE,currentWheelTask,new WheelTaskHttpClient());
+        String s = save.execute().get();
+        if(s.equals("ERROR")) {
+            throw new Exception("Save task failed");
+        } else {
+            for (int i = 0; i < wheelTasks.size(); i++) {
+                if (wheelTasks.get(i).getId() == currentWheelTask.getId()) {
+                    wheelTasks.set(i, currentWheelTask);
+                }
             }
         }
+
     }
 
     public static synchronized void clearTasks() {

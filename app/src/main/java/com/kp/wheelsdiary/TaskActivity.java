@@ -161,7 +161,15 @@ public class TaskActivity extends AppCompatActivity {
                             }
                             currentWheelTask.setDetails(details);
                             currentWheelTask.setWheel(wheelByName);
-                            WheelTaskService.updateTask(currentWheelTask);
+
+                            try {
+                                WheelTaskService.updateTask(currentWheelTask);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Intent returnIntent = new Intent();
+                                setResult(Activity.RESULT_CANCELED, returnIntent);
+                                finish();
+                            }
                         }
                         Intent returnIntent = new Intent();
                         returnIntent.putExtra("RESULT", "OK");

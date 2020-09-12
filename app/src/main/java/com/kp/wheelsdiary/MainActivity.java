@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onClick(View view) {
                             Intent addWheelIntent = new Intent(view.getContext(), WheelActivity.class);
+                            addWheelIntent.putExtra("MODE", "ADD");
                             startActivityForResult(addWheelIntent, ADD_WHEEL_RESULT);
                         }
                     });

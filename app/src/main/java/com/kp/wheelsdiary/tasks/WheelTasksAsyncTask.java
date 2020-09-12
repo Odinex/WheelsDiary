@@ -48,6 +48,8 @@ public class WheelTasksAsyncTask extends AsyncTask<Void, Void, String> {
             return wheelTaskHttpClient.getWheelTasksByUserIdAndWheelId(userId.toString(), wheelId.toString());
         } else if (request == WheelTaskRequests.SAVE) {
             return wheelTaskHttpClient.saveWheelTask(wheelTask);
+        } else if (request == WheelTaskRequests.UPDATE) {
+            return wheelTaskHttpClient.updateWheelTask(wheelTask);
         }
 
         return null;
