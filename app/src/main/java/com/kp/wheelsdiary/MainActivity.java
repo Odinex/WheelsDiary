@@ -4,12 +4,18 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -32,28 +38,32 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.kp.wheelsdiary.dto.User;
 import com.kp.wheelsdiary.dto.WheelTask;
 import com.kp.wheelsdiary.dto.Wheel;
 import com.kp.wheelsdiary.enums.TaskTypeEnum;
 import com.kp.wheelsdiary.service.WheelTaskService;
 import com.kp.wheelsdiary.service.WheelService;
 import com.kp.wheelsdiary.ui.login.LoginActivity;
+import com.kp.wheelsdiary.ui.login.SaveSharedPreference;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final int LOGIN_RESULT = 123;
+    public static int notifId = 1;
     public static final int ADD_WHEEL_RESULT = 234;
     public static final String ALL = "All";
     private static final int ADD_TASK_RESULT = 345;
     public static final int EDIT_TASK_INTENT = 456;
     private static final int WHEELS_RESULT = 567;
+    public static final String NOT_CHANNEL = "NOT_CHANNEL";
     DrawerLayout drawerLayout;
     CollapsingToolbarLayout collapsingToolbarLayout;
     Toolbar toolbar;
@@ -64,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FloatingActionButton addWheelFab;
     private boolean isFABOpen = false;
     SimpleDateFormat dateFormatter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +90,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.setContentView(R.layout.activity_main);
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
-        Intent loginIntent = new Intent(this, LoginActivity.class);
-        startActivityForResult(loginIntent, LOGIN_RESULT);
+
+        User user = SaveSharedPreference.getUserName(this);
+        if (user.getName().length() == 0) {
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivityForResult(loginIntent, LOGIN_RESULT);
+        } else {
+            WheelService.setCurrentUser(user);
+            setupActivity();
+        }
+
 
     }
 
@@ -90,60 +109,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try {
             if (requestCode == LOGIN_RESULT) {
                 if (resultCode == Activity.RESULT_OK) {
-                    setupNavigationView();
-                    setupToolbar();
-                    try {
-                        setupTablayout();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    setupCollapsingToolbarLayout();
-                    setupFab();
-                    String result = data.getStringExtra("result");
-                    wheelsFab = (FloatingActionButton) findViewById(R.id.wheelsFab);
-                    addTaskFab = (FloatingActionButton) findViewById(R.id.addTaskFab);
-                    addWheelFab = (FloatingActionButton) findViewById(R.id.addWheelFab);
-                    fab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (!isFABOpen) {
-                                showFABMenu();
-                            } else {
-                                closeFABMenu();
-                            }
-                        }
-                    });
-
-                    addTaskFab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent addTaskIntent = new Intent(view.getContext(), TaskActivity.class);
-                            addTaskIntent.putExtra("TAB_NAME", tabLayout.getTabAt(tabLayout.getSelectedTabPosition())
-                                    .getText().toString());
-                            addTaskIntent.putExtra("MODE", "ADD");
-                            startActivityForResult(addTaskIntent, ADD_TASK_RESULT);
-                        }
-                    });
-
-                    addWheelFab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent addWheelIntent = new Intent(view.getContext(), WheelActivity.class);
-                            addWheelIntent.putExtra("MODE", "ADD");
-                            startActivityForResult(addWheelIntent, ADD_WHEEL_RESULT);
-                        }
-                    });
-
-                    wheelsFab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent wheelsIntent = new Intent(view.getContext(), WheelsActivity.class);
-                            startActivityForResult(wheelsIntent, WHEELS_RESULT);
-                        }
-                    });
-                    Objects.requireNonNull(tabLayout.getTabAt(0)).select();
+                    SaveSharedPreference.setUserName(this, WheelService.getCurrentUser());
+                    setupActivity();
                 }
                 if (resultCode == Activity.RESULT_CANCELED) {
                     // Not logged in
@@ -227,6 +194,118 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void setupActivity() {
+        setupNavigationView();
+        setupToolbar();
+        try {
+            setupTablayout();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        setupCollapsingToolbarLayout();
+        setupFab();
+        wheelsFab = (FloatingActionButton) findViewById(R.id.wheelsFab);
+        addTaskFab = (FloatingActionButton) findViewById(R.id.addTaskFab);
+        addWheelFab = (FloatingActionButton) findViewById(R.id.addWheelFab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isFABOpen) {
+                    showFABMenu();
+                } else {
+                    closeFABMenu();
+                }
+            }
+        });
+
+        addTaskFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent addTaskIntent = new Intent(view.getContext(), TaskActivity.class);
+                addTaskIntent.putExtra("TAB_NAME", tabLayout.getTabAt(tabLayout.getSelectedTabPosition())
+                        .getText().toString());
+                addTaskIntent.putExtra("MODE", "ADD");
+                startActivityForResult(addTaskIntent, ADD_TASK_RESULT);
+            }
+        });
+
+        addWheelFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent addWheelIntent = new Intent(view.getContext(), WheelActivity.class);
+                addWheelIntent.putExtra("MODE", "ADD");
+                startActivityForResult(addWheelIntent, ADD_WHEEL_RESULT);
+            }
+        });
+
+        wheelsFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent wheelsIntent = new Intent(view.getContext(), WheelsActivity.class);
+                startActivityForResult(wheelsIntent, WHEELS_RESULT);
+            }
+        });
+        Objects.requireNonNull(tabLayout.getTabAt(0)).select();
+        try {
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            createNotificationChannel();
+
+            NotificationCompat.Builder builder = notifyAboutUpcomingTasks();
+            if (builder != null) {
+                notificationManager.notify(notifId++, builder.build());
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private NotificationCompat.Builder notifyAboutUpcomingTasks() {
+        int counter = WheelTaskService.countUpcomingTasks();
+        if (counter > 0) {
+
+            String text = "Your cars have " + counter + " upcoming task";
+            if (counter > 1) {
+                text += "s.";
+            } else {
+                text += ".";
+            }
+
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOT_CHANNEL)
+                    .setSmallIcon(R.drawable.ic_car_for_notifi)
+                    .setContentTitle("Reminder for car tasks")
+                    .setContentText(text)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    // Set the intent that will fire when the user taps the notification
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true);
+            return builder;
+        }
+        return null;
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String description = "Notification channgel about upcomming tasks";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(NOT_CHANNEL, (CharSequence) NOT_CHANNEL, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
         }
     }
 
@@ -331,12 +410,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         all.select();
     }
 
-    private List<WheelTask> getTasks(String tabName) throws ExecutionException, InterruptedException {
+    private List<WheelTask> getTasks(String tabName, Context ctx) throws ExecutionException, InterruptedException {
         List<WheelTask> wheelTasks;
         if (tabName.equals(ALL)) {
-            wheelTasks = WheelTaskService.getWheelTasks();
+            wheelTasks = WheelTaskService.getWheelTasks(ctx);
         } else {
-            wheelTasks = WheelTaskService.getTasksForWheel(tabName);
+            wheelTasks = WheelTaskService.getTasksForWheel(tabName, ctx);
         }
         return wheelTasks;
     }
@@ -386,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LinearLayout cardLayout = findViewById(R.id.cardLinearLayout);
         cardLayout.removeAllViews();
         WheelTaskService.clearTasks();
-        List<WheelTask> wheelTasks = getTasks(tabName);
+        List<WheelTask> wheelTasks = getTasks(tabName, this);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);

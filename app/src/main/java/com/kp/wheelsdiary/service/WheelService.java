@@ -1,12 +1,10 @@
 package com.kp.wheelsdiary.service;
 
 import com.google.gson.Gson;
-import com.kp.wheelsdiary.data.model.User;
+import com.kp.wheelsdiary.dto.User;
 import com.kp.wheelsdiary.dto.Wheel;
 import com.kp.wheelsdiary.enums.WheelTaskRequests;
 import com.kp.wheelsdiary.http.WheelHttpClient;
-import com.kp.wheelsdiary.http.WheelTaskHttpClient;
-import com.kp.wheelsdiary.tasks.WheelTasksAsyncTask;
 import com.kp.wheelsdiary.tasks.WheelsAsyncTask;
 
 import java.util.Collection;

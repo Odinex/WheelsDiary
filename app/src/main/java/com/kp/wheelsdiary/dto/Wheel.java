@@ -1,7 +1,5 @@
 package com.kp.wheelsdiary.dto;
 
-import com.kp.wheelsdiary.data.model.User;
-
 public class Wheel {
     private Long id;
     private String make;

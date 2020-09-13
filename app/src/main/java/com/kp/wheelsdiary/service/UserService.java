@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 import com.kp.wheelsdiary.R;
 import com.kp.wheelsdiary.http.Constants;
 import com.kp.wheelsdiary.http.LoginCallBack;
-import com.kp.wheelsdiary.data.model.User;
+import com.kp.wheelsdiary.dto.User;
 import com.kp.wheelsdiary.http.VolleySingleton;
 
 import org.json.JSONException;

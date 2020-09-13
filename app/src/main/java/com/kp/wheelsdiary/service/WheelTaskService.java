@@ -1,5 +1,7 @@
 package com.kp.wheelsdiary.service;
 
+import android.content.Context;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -10,6 +12,7 @@ import com.kp.wheelsdiary.dto.WheelTask;
 import com.kp.wheelsdiary.enums.WheelTaskRequests;
 import com.kp.wheelsdiary.http.WheelTaskHttpClient;
 import com.kp.wheelsdiary.tasks.WheelTasksAsyncTask;
+import com.kp.wheelsdiary.ui.login.SaveSharedPreference;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -30,10 +33,10 @@ public class WheelTaskService {
         return nextId++;
     }
 
-    public static List<WheelTask> getWheelTasks() throws ExecutionException, InterruptedException {
+    public static List<WheelTask> getWheelTasks(Context ctx) throws ExecutionException, InterruptedException {
         // Instantiate the RequestQueue.
         if(wheelTasks.isEmpty()) {
-            getWheelTasksByUserId();
+            getWheelTasksByUserId(ctx);
         }
 
 //        if(WheelTaskService.wheelTasks.isEmpty()) {
@@ -53,7 +56,7 @@ public class WheelTaskService {
         return WheelTaskService.wheelTasks;
     }
 
-    private static void getWheelTasksByUserId() throws ExecutionException, InterruptedException {
+    private static void getWheelTasksByUserId(Context ctx) throws ExecutionException, InterruptedException {
         GsonBuilder builder = new GsonBuilder();
 
         // Register an adapter to manage the date types as long values
@@ -67,7 +70,7 @@ public class WheelTaskService {
         Gson gson = builder.create();
         if (WheelService.getCurrentUser() != null) {
             WheelTasksAsyncTask wheelTasksAsyncTask = new WheelTasksAsyncTask(WheelTaskRequests.BY_USER_ID,
-                    WheelService.getCurrentUser().getId(), new WheelTaskHttpClient());
+                    SaveSharedPreference.getUserName(ctx).getId(), new WheelTaskHttpClient());
             String json = wheelTasksAsyncTask.execute().get();
             WheelTask[] wheelTaskArray = gson.fromJson(json, WheelTask[].class);
             wheelTasks.addAll(Arrays.asList(wheelTaskArray));
@@ -90,9 +93,9 @@ public class WheelTaskService {
             wheelTasks.add(wheelTask);
         }
     }
-    public static List<WheelTask> getTasksForWheel(final String wheelName) throws ExecutionException, InterruptedException {
+    public static List<WheelTask> getTasksForWheel(final String wheelName, Context ctx) throws ExecutionException, InterruptedException {
         if (wheelTasks == null || wheelTasks.isEmpty()) {
-            getWheelTasksByUserId();
+            getWheelTasksByUserId(ctx);
         }
         List<WheelTask> filtered = new ArrayList<>();
         for (WheelTask wheelTask : wheelTasks) {
@@ -140,5 +143,18 @@ public class WheelTaskService {
         } else {
             wheelTasks.clear();
         }
+    }
+
+    public static int countUpcomingTasks() {
+        int counter = 0;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.DAY_OF_YEAR,7);
+        for(WheelTask task : wheelTasks) {
+            if(task.getDateScheduled().before(cal.getTime())) {
+                counter++;
+            }
+        }
+        return counter;
     }
 }

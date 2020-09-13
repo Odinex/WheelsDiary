@@ -1,4 +1,4 @@
-package com.kp.wheelsdiary.data.model;
+package com.kp.wheelsdiary.dto;
 
 /**
  * Data class that captures user information for logged in users retrieved from LoginRepository

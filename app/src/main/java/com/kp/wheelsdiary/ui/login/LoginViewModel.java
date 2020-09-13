@@ -9,8 +9,7 @@ import android.util.Patterns;
 
 import com.kp.wheelsdiary.http.LoginCallBack;
 import com.kp.wheelsdiary.service.UserService;
-import com.kp.wheelsdiary.data.Result;
-import com.kp.wheelsdiary.data.model.User;
+import com.kp.wheelsdiary.dto.User;
 import com.kp.wheelsdiary.R;
 import com.kp.wheelsdiary.service.WheelService;
 
