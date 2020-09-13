@@ -115,6 +115,28 @@ public class TaskActivity extends AppCompatActivity {
             textView.setText(text);
             String buttonSaveText = "Save Task " + currentWheelTask.getId();
             addTaskButton.setText(buttonSaveText);
+
+            Button deleteButton = findViewById(R.id.deleteTask);
+            deleteButton.setVisibility(View.VISIBLE);
+            deleteButton.setEnabled(true);
+            String deleteButtonText = "Delete Task " +currentWheelTask.getId();
+            deleteButton.setText(deleteButtonText);
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent returnIntent = new Intent();
+                    try {
+                        WheelTaskService.deleteWheelTask(currentWheelTask.getId());
+
+                        setResult(Activity.RESULT_OK, returnIntent);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        setResult(Activity.RESULT_CANCELED, returnIntent);
+                    }
+                    finish();
+                }
+            });
         }
         addTaskButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -39,8 +39,10 @@ import com.kp.wheelsdiary.service.WheelTaskService;
 import com.kp.wheelsdiary.service.WheelService;
 import com.kp.wheelsdiary.ui.login.LoginActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FloatingActionButton addTaskFab;
     FloatingActionButton addWheelFab;
     private boolean isFABOpen = false;
+    SimpleDateFormat dateFormatter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 //set content view AFTER ABOVE sequence (to avoid crash)
         this.setContentView(R.layout.activity_main);
-
+        dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
         Intent loginIntent = new Intent(this, LoginActivity.class);
         startActivityForResult(loginIntent, LOGIN_RESULT);
@@ -413,7 +416,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             titleTextView.setTextColor(Color.WHITE);
             textLayout.addView(titleTextView);
             TextView descriptionTextView = new TextView(textLayout.getContext());
-            descriptionTextView.setText(String.format("%s scheduled for %s", wheelTask.getDetails(), wheelTask.getDateScheduled()));
+
+            descriptionTextView.setText(String.format("%s scheduled for %s", wheelTask.getDetails(), dateFormatter.format(wheelTask.getDateScheduled())));
             descriptionTextView.setTextColor(Color.WHITE);
             descriptionTextView.setLayoutParams(layoutParamsText);
             textLayout.addView(descriptionTextView);

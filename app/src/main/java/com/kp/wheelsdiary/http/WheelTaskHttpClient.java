@@ -2,16 +2,10 @@ package com.kp.wheelsdiary.http;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.kp.wheelsdiary.data.Result;
-import com.kp.wheelsdiary.data.model.User;
 import com.kp.wheelsdiary.dto.WheelTask;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-
 import okhttp3.Call;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -46,7 +40,7 @@ public class WheelTaskHttpClient {
     }
 
     public String saveWheelTask(WheelTask wheelTask) {
-        String url = Constants.SAVE_UPDATE_WHEELTASK;
+        String url = Constants.SAVE_UPDATE_DELETE_WHEELTASK;
         RequestBody body = RequestBody.create(gson.toJson(wheelTask), JSON);
         Request request = new Request.Builder().url(url).post(body).build();
         System.out.println(request.toString());
@@ -64,7 +58,7 @@ public class WheelTaskHttpClient {
     }
 
     public String updateWheelTask(WheelTask wheelTask) {
-        String url = Constants.SAVE_UPDATE_WHEELTASK;
+        String url = Constants.SAVE_UPDATE_DELETE_WHEELTASK;
         RequestBody body = RequestBody.create(gson.toJson(wheelTask), JSON);
         Request request = new Request.Builder().url(url).put(body).build();
         System.out.println(request.toString());
@@ -94,5 +88,23 @@ public class WheelTaskHttpClient {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public String deleteWheelTask(Long wheelTaskId) {
+        String url = Constants.SAVE_UPDATE_DELETE_WHEELTASK;
+
+        Request request = new Request.Builder().addHeader("id", String.valueOf(wheelTaskId)).url(url).delete().build();
+        System.out.println(request.toString());
+        Call call = client.newCall(request);
+        try (Response response = call.execute()) {
+            if(response.code() ==  200) {
+                return "OK";
+            } else {
+                return "ERROR";
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "ERROR";
     }
 }

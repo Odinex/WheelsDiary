@@ -131,4 +131,14 @@ public class WheelTaskService {
     public static synchronized void clearTasks() {
         wheelTasks.clear();
     }
+
+    public static void deleteWheelTask(long id) throws Exception {
+        WheelTasksAsyncTask save = new WheelTasksAsyncTask(WheelTaskRequests.DELETE,id,new WheelTaskHttpClient());
+        String s = save.execute().get();
+        if(s.equals("ERROR")) {
+            throw new Exception("Save task failed");
+        } else {
+            wheelTasks.clear();
+        }
+    }
 }
