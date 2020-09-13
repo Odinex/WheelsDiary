@@ -23,6 +23,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.kp.wheelsdiary.dto.Wheel;
 import com.kp.wheelsdiary.service.WheelService;
@@ -31,11 +32,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
+import static com.kp.wheelsdiary.MainActivity.ADD_WHEEL_RESULT;
+
 public class WheelsActivity extends AppCompatActivity {
 
     private static final int EDIT_WHEEL_INTENT = 789;
     private Toolbar toolbar;
     private CollapsingToolbarLayout collapsingToolbarLayout;
+    private FloatingActionButton addWheelFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,16 @@ public class WheelsActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        addWheelFab = (FloatingActionButton) findViewById(R.id.addWheelFabInWheels);
+        addWheelFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent addWheelIntent = new Intent(view.getContext(), WheelActivity.class);
+                addWheelIntent.putExtra("MODE", "ADD");
+                startActivityForResult(addWheelIntent, ADD_WHEEL_RESULT);
+            }
+        });
     }
 
     private void setupToolbar() {
@@ -178,22 +192,47 @@ public class WheelsActivity extends AppCompatActivity {
                     String carname = data.getStringExtra("name");
                     reloadCars();
                     Snackbar openNewTab = Snackbar
-                            .make(findViewById(R.id.coordinatorLayout), "Editing/Deleting of car " + carname + " was successful", Snackbar.LENGTH_LONG);
+                            .make(findViewById(R.id.wheelsCardLinearLayout), "Editing/Deleting of car " + carname + " was successful", Snackbar.LENGTH_LONG);
                     openNewTab.setAction("OK", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                         }
                     }).show();
                 }
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                Snackbar openNewTab = Snackbar
-                        .make(findViewById(R.id.coordinatorLayout), "Editing/Deleting car failed!", Snackbar.LENGTH_LONG);
-                openNewTab.setAction("OK", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                    }
-                }).show();
+
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    Snackbar openNewTab = Snackbar
+                            .make(findViewById(R.id.wheelsCardLinearLayout), "Editing/Deleting car failed!", Snackbar.LENGTH_LONG);
+                    openNewTab.setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    }).show();
+                }
+            } else if (requestCode == ADD_WHEEL_RESULT) {
+                if (resultCode == Activity.RESULT_OK) {
+                    String tabName = data.getStringExtra("name");
+                    reloadCars();
+                    Snackbar openNewTab = Snackbar
+                            .make(findViewById(R.id.wheelsCardLinearLayout), "New car added: '" + tabName + "'", Snackbar.LENGTH_LONG);
+
+                    openNewTab.setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // TODO refresh data for the car
+                        }
+                    }).show(); // Don’t forget to show!
+                }
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    Snackbar openNewTab = Snackbar
+                            .make(findViewById(R.id.wheelsCardLinearLayout), "Adding car failed!", Snackbar.LENGTH_LONG);
+                    openNewTab.setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    }).show();
+                }
+
             }
         }catch (Exception e) {
             e.printStackTrace();

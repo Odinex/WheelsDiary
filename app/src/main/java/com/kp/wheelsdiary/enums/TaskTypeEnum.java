@@ -8,7 +8,7 @@ public enum TaskTypeEnum {
 
     public static String [] getTaskTypeArray () {
         List<String> taskTypeList = new ArrayList<>();
-        taskTypeList.add("Select a model...");
+        taskTypeList.add("Select a task type...");
         for(TaskTypeEnum taskType : TaskTypeEnum.values()) {
             taskTypeList.add(taskType.name());
         }

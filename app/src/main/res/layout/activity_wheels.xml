@@ -151,7 +151,15 @@
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
-
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addWheelFabInWheels"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginEnd="26dp"
+            android:layout_marginBottom="26dp"
+            android:src="@drawable/ic_plus_car"
+            app:fabSize="mini" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

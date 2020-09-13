@@ -61,7 +61,7 @@ public class WheelService {
 
         // Create String[] of size of setOfString
         String[] arrayOfString = new String[setOfString.size()+1];
-        arrayOfString[0] = "Select a model...";
+        arrayOfString[0] = "Select car name...";
         // Copy elements from set to string array
         // using advanced for loop
         int index = 1;
