@@ -12,6 +12,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -42,6 +43,7 @@ import com.kp.wheelsdiary.dto.User;
 import com.kp.wheelsdiary.dto.WheelTask;
 import com.kp.wheelsdiary.dto.Wheel;
 import com.kp.wheelsdiary.enums.TaskTypeEnum;
+import com.kp.wheelsdiary.service.NotificationService;
 import com.kp.wheelsdiary.service.WheelTaskService;
 import com.kp.wheelsdiary.service.WheelService;
 import com.kp.wheelsdiary.ui.login.LoginActivity;
@@ -51,19 +53,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final int LOGIN_RESULT = 123;
-    public static int notifId = 1;
     public static final int ADD_WHEEL_RESULT = 234;
     public static final String ALL = "All";
     private static final int ADD_TASK_RESULT = 345;
     public static final int EDIT_TASK_INTENT = 456;
     private static final int WHEELS_RESULT = 567;
-    public static final String NOT_CHANNEL = "NOT_CHANNEL";
     DrawerLayout drawerLayout;
     CollapsingToolbarLayout collapsingToolbarLayout;
     Toolbar toolbar;
@@ -251,63 +250,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         Objects.requireNonNull(tabLayout.getTabAt(0)).select();
-        try {
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-            createNotificationChannel();
 
-            NotificationCompat.Builder builder = notifyAboutUpcomingTasks();
-            if (builder != null) {
-                notificationManager.notify(notifId++, builder.build());
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        Intent alarmIntent = new Intent(this, NotificationService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this,0,alarmIntent,0);
+        if (manager != null) {
+            manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0, pendingIntent);
         }
+
     }
 
-    private NotificationCompat.Builder notifyAboutUpcomingTasks() {
-        int counter = WheelTaskService.countUpcomingTasks();
-        if (counter > 0) {
 
-            String text = "Your cars have " + counter + " upcoming task";
-            if (counter > 1) {
-                text += "s.";
-            } else {
-                text += ".";
-            }
-
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOT_CHANNEL)
-                    .setSmallIcon(R.drawable.ic_car_for_notifi)
-                    .setContentTitle("Reminder for car tasks")
-                    .setContentText(text)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    // Set the intent that will fire when the user taps the notification
-                    .setContentIntent(pendingIntent)
-                    .setAutoCancel(true);
-            return builder;
-        }
-        return null;
-    }
-
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String description = "Notification channgel about upcomming tasks";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(NOT_CHANNEL, (CharSequence) NOT_CHANNEL, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
