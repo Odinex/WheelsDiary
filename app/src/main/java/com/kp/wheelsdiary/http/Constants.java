@@ -9,6 +9,6 @@ public final class Constants {
     public static final String WHEELTASK_BY_ID = LOCALHOST +"/tasks/id";
     public static final String SAVE_UPDATE_DELETE_WHEELTASK = LOCALHOST +"/tasks";
     public static final String WHEELS_BY_USER_ID = LOCALHOST +"/wheels/userId";
-    public static final String SAVE_UPDATE_WHEEL = LOCALHOST +"/wheels";
+    public static final String SAVE_UPDATE_DELETE_WHEEL = LOCALHOST +"/wheels";
 
 }

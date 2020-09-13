@@ -178,7 +178,7 @@ public class WheelsActivity extends AppCompatActivity {
                     String carname = data.getStringExtra("name");
                     reloadCars();
                     Snackbar openNewTab = Snackbar
-                            .make(findViewById(R.id.coordinatorLayout), "Edit of car " + carname + " was successful", Snackbar.LENGTH_LONG);
+                            .make(findViewById(R.id.coordinatorLayout), "Editing/Deleting of car " + carname + " was successful", Snackbar.LENGTH_LONG);
                     openNewTab.setAction("OK", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -188,7 +188,7 @@ public class WheelsActivity extends AppCompatActivity {
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 Snackbar openNewTab = Snackbar
-                        .make(findViewById(R.id.coordinatorLayout), "Editting car failed!", Snackbar.LENGTH_LONG);
+                        .make(findViewById(R.id.coordinatorLayout), "Editing/Deleting car failed!", Snackbar.LENGTH_LONG);
                 openNewTab.setAction("OK", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

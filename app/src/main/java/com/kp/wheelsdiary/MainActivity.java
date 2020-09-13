@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     addTabsAndSelectCombinedTab();
                     reloadTasks(ALL);
                     Snackbar openNewTab = Snackbar
-                            .make(findViewById(R.id.coordinatorLayout), "New tab added: '" + tabName + "'", Snackbar.LENGTH_LONG);
+                            .make(findViewById(R.id.coordinatorLayout), "New car added: '" + tabName + "'", Snackbar.LENGTH_LONG);
 
                     openNewTab.setAction("OK", new View.OnClickListener() {
                         @Override
@@ -176,15 +176,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
 
-            } else if (requestCode == ADD_TASK_RESULT || requestCode == EDIT_TASK_INTENT) {
+            } else if (requestCode == ADD_TASK_RESULT) {
                 if (resultCode == Activity.RESULT_OK) {
                     String tabName = tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getText().toString();
+                    Snackbar openNewTab = Snackbar
+                            .make(findViewById(R.id.coordinatorLayout), "Adding task was successful!", Snackbar.LENGTH_LONG);
+                    openNewTab.setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    }).show();
                     reloadTasks(tabName);
                 }
 
                 if (resultCode == Activity.RESULT_CANCELED) {
                     Snackbar openNewTab = Snackbar
-                            .make(findViewById(R.id.coordinatorLayout), "Adding/Editting task failed!", Snackbar.LENGTH_LONG);
+                            .make(findViewById(R.id.coordinatorLayout), "Adding task failed!", Snackbar.LENGTH_LONG);
+                    openNewTab.setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    }).show();
+                }
+            } else if (requestCode == EDIT_TASK_INTENT) {
+                if (resultCode == Activity.RESULT_OK) {
+                    String tabName = tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getText().toString();
+                    reloadTasks(tabName);
+                    Snackbar openNewTab = Snackbar
+                            .make(findViewById(R.id.coordinatorLayout), "Editing/Deleting task was successful!", Snackbar.LENGTH_LONG);
+                    openNewTab.setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    }).show();
+                }
+
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    Snackbar openNewTab = Snackbar
+                            .make(findViewById(R.id.coordinatorLayout), "Editing/Deleting task failed!", Snackbar.LENGTH_LONG);
                     openNewTab.setAction("OK", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -192,11 +221,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }).show();
                 }
             } else if (requestCode == WHEELS_RESULT) {
-                if (resultCode == Activity.RESULT_OK) {
-                    tabLayout.removeAllTabs();
-                    addTabsAndSelectCombinedTab();
-                    reloadTasks(ALL);
-                }
+                tabLayout.removeAllTabs();
+                addTabsAndSelectCombinedTab();
+                reloadTasks(ALL);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -396,8 +423,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             textLayout.setLayoutParams(layoutParams2);
 
 
-
-
             TextView titleTextView = new TextView(textLayout.getContext());
 
             LinearLayout.LayoutParams layoutParamsText = new LinearLayout.LayoutParams(
@@ -427,7 +452,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             editButton.setImageDrawable(editIcon);
             ViewGroup.LayoutParams editButtonParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-            cardViewParams.setMargins(5,16,5,16);
+            cardViewParams.setMargins(5, 16, 5, 16);
             editButton.setLayoutParams(editButtonParams);
 
             editButton.setOnClickListener(new View.OnClickListener() {

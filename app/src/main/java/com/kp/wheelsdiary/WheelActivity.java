@@ -132,6 +132,27 @@ public class WheelActivity extends AppCompatActivity {
             titleView.setText(title);
             String save_car = "Save car";
             button.setText(save_car);
+            Button deleteButton = findViewById(R.id.deleteWheel);
+            deleteButton.setVisibility(View.VISIBLE);
+            deleteButton.setEnabled(true);
+            String deleteButtonText = "Delete Car " +currentWheel.getId();
+            deleteButton.setText(deleteButtonText);
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent returnIntent = new Intent();
+                    try {
+                        WheelService.deleteWheel(currentWheel.getId());
+
+                        setResult(Activity.RESULT_OK, returnIntent);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        setResult(Activity.RESULT_CANCELED, returnIntent);
+                    }
+                    finish();
+                }
+            });
         }
         brandSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

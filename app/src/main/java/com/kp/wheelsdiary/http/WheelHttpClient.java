@@ -2,7 +2,6 @@ package com.kp.wheelsdiary.http;
 
 import com.google.gson.Gson;
 import com.kp.wheelsdiary.dto.Wheel;
-import com.kp.wheelsdiary.dto.WheelTask;
 
 import okhttp3.Call;
 import okhttp3.MediaType;
@@ -37,7 +36,7 @@ public class WheelHttpClient {
     }
 
     public String saveWheel(Wheel wheel) {
-        String url = Constants.SAVE_UPDATE_WHEEL;
+        String url = Constants.SAVE_UPDATE_DELETE_WHEEL;
         RequestBody body = RequestBody.create(gson.toJson(wheel), JSON);
         Request request = new Request.Builder().url(url).post(body).build();
         System.out.println(request.toString());
@@ -55,7 +54,7 @@ public class WheelHttpClient {
     }
 
     public String updateWheel(Wheel wheel) {
-        String url = Constants.SAVE_UPDATE_WHEEL;
+        String url = Constants.SAVE_UPDATE_DELETE_WHEEL;
         RequestBody body = RequestBody.create(gson.toJson(wheel), JSON);
         Request request = new Request.Builder().url(url).put(body).build();
         System.out.println(request.toString());
@@ -73,4 +72,21 @@ public class WheelHttpClient {
     }
 
 
+    public String deleteWheel(Long wheelId) {
+        String url = Constants.SAVE_UPDATE_DELETE_WHEEL;
+
+        Request request = new Request.Builder().addHeader("id", String.valueOf(wheelId)).url(url).delete().build();
+        System.out.println(request.toString());
+        Call call = client.newCall(request);
+        try (Response response = call.execute()) {
+            if(response.code() ==  200) {
+                return "OK";
+            } else {
+                return "ERROR";
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "ERROR";
+    }
 }

@@ -16,9 +16,9 @@ public class WheelsAsyncTask extends AsyncTask<Void, Void, String> {
 
     public WheelsAsyncTask(WheelTaskRequests request, Long id, WheelHttpClient httpClient) {
         this.request = request;
-        if(request == WheelTaskRequests.BY_ID) {
-           this.wheelId = id;
-        } else if(request == WheelTaskRequests.BY_USER_ID){
+        if (request == WheelTaskRequests.BY_ID || request == WheelTaskRequests.DELETE) {
+            this.wheelId = id;
+        } else if (request == WheelTaskRequests.BY_USER_ID) {
             this.userId = id;
         }
         this.httpClient = httpClient;
@@ -40,6 +40,8 @@ public class WheelsAsyncTask extends AsyncTask<Void, Void, String> {
                 return httpClient.saveWheel(wheel);
             case UPDATE:
                 return httpClient.updateWheel(wheel);
+            case DELETE:
+                return httpClient.deleteWheel(wheelId);
         }
         return null;
     }

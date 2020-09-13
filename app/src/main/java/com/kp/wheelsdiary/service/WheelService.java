@@ -116,7 +116,17 @@ public class WheelService {
         String s = save.execute().get();
         clearWheels();
         if(s.equals("ERROR")) {
-            throw new Exception("Save task failed");
+            throw new Exception("Update task failed");
+        }
+    }
+
+    public static void deleteWheel(Long id) throws Exception {
+        WheelsAsyncTask save = new WheelsAsyncTask(WheelTaskRequests.DELETE,id,new WheelHttpClient());
+        String s = save.execute().get();
+        if(s.equals("ERROR")) {
+            throw new Exception("Delete task failed");
+        } else {
+            wheels.clear();
         }
     }
 }

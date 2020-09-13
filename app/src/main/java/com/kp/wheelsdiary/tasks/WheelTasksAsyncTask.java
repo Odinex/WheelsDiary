@@ -42,18 +42,21 @@ public class WheelTasksAsyncTask extends AsyncTask<Void, Void, String> {
 
     @Override
     protected String doInBackground(Void... voids) {
-        if (request == WheelTaskRequests.BY_USER_ID) {
-            return wheelTaskHttpClient.getWheelTasksByUserId(userId.toString());
+        switch (request) {
+            case BY_USER_ID:
+                return wheelTaskHttpClient.getWheelTasksByUserId(userId.toString());
 
+            case BY_USER_ID_AND_WHEEL_ID:
+                return wheelTaskHttpClient.getWheelTasksByUserIdAndWheelId(userId.toString(), wheelId.toString());
 
-        } else if (request == WheelTaskRequests.BY_USER_ID_AND_WHEEL_ID) {
-            return wheelTaskHttpClient.getWheelTasksByUserIdAndWheelId(userId.toString(), wheelId.toString());
-        } else if (request == WheelTaskRequests.SAVE) {
-            return wheelTaskHttpClient.saveWheelTask(wheelTask);
-        } else if (request == WheelTaskRequests.UPDATE) {
-            return wheelTaskHttpClient.updateWheelTask(wheelTask);
-        } else if (request == WheelTaskRequests.DELETE) {
-            return wheelTaskHttpClient.deleteWheelTask(wheelTaskId);
+            case SAVE:
+                return wheelTaskHttpClient.saveWheelTask(wheelTask);
+
+            case UPDATE:
+                return wheelTaskHttpClient.updateWheelTask(wheelTask);
+
+            case DELETE:
+                return wheelTaskHttpClient.deleteWheelTask(wheelTaskId);
         }
 
         return null;

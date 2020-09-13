@@ -75,4 +75,13 @@
         android:layout_gravity="center"
         android:text="Add car" />
 
+    <Button
+        android:id="@+id/deleteWheel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Delete wheel "
+        android:visibility="invisible"
+        android:enabled="false"/>
+
 </LinearLayout>
